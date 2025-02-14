@@ -17,7 +17,7 @@ export class CompanyService {
     });
 
     if (!company) {
-      throw new NotFoundException('Company not found'); // This returns a 404 error
+      throw new NotFoundException('Company not found');
     }
 
     return company;
@@ -35,7 +35,6 @@ export class CompanyService {
     }
     const newCompany = await this.prisma.company.create({
       data: {
-        // This is a spreat operator that spreads the body object into the create object
         ...body
       },
     });
