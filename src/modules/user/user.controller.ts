@@ -1,7 +1,9 @@
 import { Controller, Get, Param } from "@nestjs/common";
-import { UserService } from "./user.service";
-import { UserDto } from "./dto/user.dto";
 import { ApiOkResponse, ApiResponse } from "@nestjs/swagger";
+import { Role } from "@prisma/client";
+import { IsAuthenticated } from "src/core/auth/auth.decorator";
+import { UserDto } from "./dto/user.dto";
+import { UserService } from "./user.service";
 
 @Controller('user')
 export class UserController {
@@ -14,6 +16,7 @@ export class UserController {
     type: UserDto,
     isArray: true,
   })
+  @IsAuthenticated(Role.ADMIN)
   async getUsers() {
     return this.userService.getUsers();
   }
@@ -23,6 +26,7 @@ export class UserController {
     description: 'Get a user by ID',
     type: UserDto,
   })
+  @IsAuthenticated(Role.ADMIN)
   async getUserById(@Param('id') id: string) {
     return this.userService.getUserById(id);
   }

@@ -3,9 +3,7 @@ import { PrismaService } from "src/core/database/prisma.service";
 import { CreateEditUserDto } from "./dto/create-edit-user.dto";
 
 @Injectable()
-export class UserService {
-  
- 
+export class UserService { 
   constructor(private readonly prisma: PrismaService) {}
 
 
@@ -59,5 +57,17 @@ export class UserService {
     return this.prisma.user.delete({
       where: { id },
     });
+  }
+
+  public async getUserByEmail(email: string) {
+    const user =  await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
   }
 }
