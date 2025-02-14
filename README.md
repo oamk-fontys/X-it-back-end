@@ -71,7 +71,7 @@
 
    Create and apply migrations:
    ```bash
-   npx prisma migrate dev
+   npx prisma migrate dev --name example-name
    ```
 
    View migration history:
