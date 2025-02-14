@@ -13,26 +13,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-model User {
-  id        String   @id @default(uuid())
-  pets      Pet[]
+enum Role {
+  ADMIN
+  USER
+  COMPANY
 }
 
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  password    String
+  username    String   @unique
+  firstName   String
+  lastName    String
+  phoneNumber String
+  dateOfBirth DateTime
+  role        Role     @default(USER)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  pets        Pet[]
+}
 
 // THIS IS NOT PART OF THE APPLICATION JUST AN EXAMPLE TO SHOW MODULES
 model Pet {
-  id        String   @id @default(uuid())
-  name      String
-  age       Int
-  breed     String
-  species   String
-  gender    String
-  color     String
-  size      String
-  weight    Int
-  image     String
+  id          String  @id @default(uuid())
+  name        String
+  age         Int
+  breed       String
+  species     String
+  gender      String
+  color       String
+  size        String
+  weight      Int
+  image       String
   description String
-  userId    String?
-  user      User?   @relation(fields: [userId], references: [id])
+  userId      String?
+  user        User?   @relation(fields: [userId], references: [id])
 }
