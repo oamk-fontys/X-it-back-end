@@ -17,7 +17,7 @@ export class RoomService {
         });
 
         if (!room) {
-            throw new NotFoundException('Room not found'); // This returns a 404 error
+            throw new NotFoundException('Room not found');
         }
 
         return room;
@@ -33,7 +33,6 @@ export class RoomService {
         }
         const newRoom = await this.prisma.room.create({
             data: {
-                // This is a spreat operator that spreads the body object into the create object
                 ...body
             },
         });
