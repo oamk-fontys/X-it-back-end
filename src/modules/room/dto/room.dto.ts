@@ -27,7 +27,7 @@ export class CreateEditRoomDto {
     @IsNotEmpty()
     @ApiProperty({
         description: 'The id of the company',
-        example: '3',
+        example: 'a3320ee0-7b48-4119-8569-a7d142046fd1',
         type: String,
     })
     companyId: string;
@@ -44,7 +44,7 @@ export class CreateEditRoomDto {
     @Expose()
     @ApiProperty({
         description: 'room id',
-        example: '4',
+        example: '617949f8-0c4e-4bb8-b13b-c24fd5175f3b',
         type: Number,
     })
     id: number;
