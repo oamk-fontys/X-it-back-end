@@ -34,4 +34,37 @@
    docker-compose up -d
    ```
 
+5. Start Application: 
+   npm run start:dev (This is for development it has auto refresh)
+
+
+
+6. Prisma Commands:
+
+   Initialize database with Prisma schema:
+   ```bash
+   npx prisma migrate dev
+   ```
+
+   Generate Prisma Client (after schema changes):
+   ```bash
+   npx prisma generate
+   ```
+
+   View database in Prisma Studio:
+   ```bash
+   npx prisma studio
+   ```
+
+   Reset database (WARNING: Deletes all data):
+   ```bash
+   npx prisma migrate reset
+   ```
+
+   View migration history:
+   ```bash
+   npx prisma migrate status
+   ```
+
+
 Your NestJS application should now be set up with a PostgreSQL database running in Docker!
