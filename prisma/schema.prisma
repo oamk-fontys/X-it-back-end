@@ -20,18 +20,20 @@ enum Role {
 }
 
 model User {
-  id          String   @id @default(uuid())
-  email       String   @unique
+  id          String    @id @default(uuid())
+  email       String    @unique
   password    String
-  username    String   @unique
+  username    String    @unique
   firstName   String
   lastName    String
   phoneNumber String
   dateOfBirth DateTime
-  role        Role     @default(USER)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  role        Role      @default(USER)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   pets        Pet[]
+  companyId   String
+  Company     Company[]
 }
 
 // THIS IS NOT PART OF THE APPLICATION JUST AN EXAMPLE TO SHOW MODULES
@@ -49,4 +51,19 @@ model Pet {
   description String
   userId      String?
   user        User?   @relation(fields: [userId], references: [id])
+}
+
+model Company {
+  id          String   @id @default(uuid())
+  name        String
+  address     String
+  city        String
+  vat         String
+  postalCode  String
+  description String
+  ownerId     String?
+  owner       User?    @relation(fields: [ownerId], references: [id])
+  verified    Boolean
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
