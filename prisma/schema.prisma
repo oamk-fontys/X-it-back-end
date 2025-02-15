@@ -32,7 +32,6 @@ model User {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   pets        Pet[]
-  companyId   String
   Company     Company[]
 }
 
