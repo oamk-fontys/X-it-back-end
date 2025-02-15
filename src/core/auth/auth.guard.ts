@@ -1,17 +1,20 @@
 
 import {
-    CanActivate,
-    ExecutionContext,
-    Injectable,
-    UnauthorizedException,
-    ForbiddenException,
-  } from '@nestjs/common';
-  import { JwtService } from '@nestjs/jwt';
-  import { jwtConstants } from './constants';
-  import { Request } from 'express';
-  import { Reflector } from '@nestjs/core';
-  import { ROLES_KEY } from './auth.decorator';
-  import { Role } from '@prisma/client';
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { JwtService } from '@nestjs/jwt';
+import { Role } from '@prisma/client';
+import { Request } from 'express';
+import { UserDto } from 'src/modules/user/dto/user.dto';
+import { ROLES_KEY } from './auth.decorator';
+import { jwtConstants } from './constants';
+
+  export type RequestWithUser = Request & { user: UserDto };
   
   @Injectable()
   export class AuthGuard implements CanActivate {
