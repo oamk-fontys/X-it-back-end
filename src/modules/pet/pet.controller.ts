@@ -1,13 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put, Delete} from "@nestjs/common";
-import { PetService } from "./pet.service";
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { CreateEditPetDto } from "./dto/create-edit-pet.dto";
+import { PetService } from "./pet.service";
 
 @Controller('pet')
 export class PetController {
   constructor(private readonly petService: PetService) {}
 
 
-  @Get()
+  @Get() 
   async getPets() {
     return this.petService.getPets();
   }
