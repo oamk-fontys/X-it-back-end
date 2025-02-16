@@ -65,4 +65,15 @@ model Company {
   verified    Boolean
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  Room        Room[]
+}
+
+model Room {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  companyId   String
+  company     Company? @relation(fields: [companyId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
