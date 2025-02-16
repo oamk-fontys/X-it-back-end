@@ -32,6 +32,12 @@ export class AuthService {
       throw new BadRequestException('Password and confirm password do not match');
     }
 
+    const existingUser = await this.userService.getUserByEmail(body.email);
+
+    if (existingUser) {
+      throw new BadRequestException('There is already an account with this email');
+    }
+
     const user = await this.userService.createUser(body);
 
     return user;
