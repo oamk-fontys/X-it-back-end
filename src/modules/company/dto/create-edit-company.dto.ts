@@ -27,7 +27,7 @@ export class CreateEditCompanyDto {
     @IsNotEmpty()
     @ApiProperty({
         description: 'The id of the owner',
-        example: '3',
+        example: '241afd74-f7e1-4f37-a4a9-ffd4d68e7b0a',
         type: String,
     })
     ownerId: string;
