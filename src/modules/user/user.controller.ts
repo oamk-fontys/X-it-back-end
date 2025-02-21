@@ -1,9 +1,10 @@
-import { Controller, Get, Param } from "@nestjs/common";
-import { ApiOkResponse, ApiResponse } from "@nestjs/swagger";
-import { Role } from "@prisma/client";
-import { IsAuthenticated } from "src/core/auth/auth.decorator";
-import { UserDto } from "./dto/user.dto";
-import { UserService } from "./user.service";
+import { Controller, Get, Param, Req } from '@nestjs/common';
+import { ApiOkResponse, ApiResponse } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
+import { IsAuthenticated } from 'src/core/auth/auth.decorator';
+import { RequestWithUser } from 'src/core/auth/auth.guard';
+import { UserDto } from './dto/user.dto';
+import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
@@ -19,6 +20,16 @@ export class UserController {
   @IsAuthenticated(Role.ADMIN)
   async getUsers() {
     return this.userService.getUsers();
+  }
+
+  @Get('me')
+  @ApiOkResponse({
+    description: 'Get the current user',
+    type: UserDto,
+  })
+  @IsAuthenticated()
+  async getMe(@Req() req: RequestWithUser) {
+    return req.user;
   }
 
   @Get(':id')
