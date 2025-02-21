@@ -2,7 +2,6 @@ import { Injectable, NotFoundException, Req } from "@nestjs/common";
 import { PrismaService } from "src/core/database/prisma.service";
 import { CreateEditBookingDto } from "./dto/create-edit-booking.dto";
 import { IsAuthenticated } from "src/core/auth/auth.decorator";
-import { CreateEditCompanyDto } from "../company/dto/create-edit-company.dto";
 import { RequestWithUser } from "src/core/auth/auth.guard";
 
 @Injectable()
