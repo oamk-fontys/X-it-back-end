@@ -64,6 +64,12 @@ export class AuthService {
       throw new UnauthorizedException('Invalid access code');
     }
 
+    if (user.companyId !== body.companyId) {
+      throw new UnauthorizedException(
+        'You are not authorized to access this company',
+      );
+    }
+
     const payload = { ...user };
 
     return {
