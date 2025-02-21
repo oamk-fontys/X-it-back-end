@@ -33,6 +33,7 @@ model User {
   updatedAt   DateTime  @updatedAt
   pets        Pet[]
   Company     Company[]
+  accessCode  String?   @unique
 }
 
 // THIS IS NOT PART OF THE APPLICATION JUST AN EXAMPLE TO SHOW MODULES
