@@ -27,10 +27,10 @@ export class CreateEditCompanyDto {
     @IsNotEmpty()
     @ApiProperty({
         description: 'The id of the owner',
-        example: '3',
-        type: Number,
+        example: '76dcdb77-5522-4deb-b8ba-8bc4b16892a3',
+        type: String,
     })
-    ownerId: number;
+    ownerId: string;
 
     @Expose()
     @IsNotEmpty()
@@ -97,8 +97,8 @@ export class CreateEditCompanyDto {
     @Expose()
     @ApiProperty({
         description: 'company id',
-        example: '4',
-        type: Number,
+        example: 'ca39d102-0a78-43de-8493-b8bf499c61d9',
+        type: String,
     })
-    id: number;
+    id: string;
 }
