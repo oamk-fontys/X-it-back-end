@@ -93,4 +93,5 @@ model Booking {
   roomId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  weekday   String
 }

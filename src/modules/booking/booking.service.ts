@@ -35,7 +35,6 @@ export class BookingService {
         return booking;
     }
 
-
     public async createBooking(body: CreateEditBookingDto) {
         if (body.userId) {
             const user = await this.prisma.user.findUnique({
@@ -49,7 +48,8 @@ export class BookingService {
         const newBooking = await this.prisma.booking.create({
             data: {
                 ...body,
-                userId: body.userId
+                userId: body.userId,
+                weekday: body.weekday
             },
         });
 

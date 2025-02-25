@@ -30,5 +30,5 @@ export class CreateEditBookingDto {
         example: 'Monday',
         type: String,
     })
-    weekDay: string;
+    weekday: string;
 }
