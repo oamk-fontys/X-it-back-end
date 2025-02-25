@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Post, Put, Delete } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put, Delete, Req } from "@nestjs/common";
 import { BookingService } from "./booking.service";
 import { CreateEditBookingDto } from "./dto/create-edit-booking.dto";
+import { RequestWithUser } from "src/core/auth/auth.guard";
 
 @Controller('booking')
 export class BookingController {
@@ -8,18 +9,18 @@ export class BookingController {
 
 
     @Get(':userId')
-    async getAllBookingsByUserId(@Param('userId') userId: string) {
-        return this.bookingService.getAllBookingsByUserId(userId);
+    async getAllBookingsByUserId(@Req() req: RequestWithUser) {
+        return this.bookingService.getAllBookingsByUserId(req);
     }
 
     @Get(':userId, :id')
-    async getSingleBookingByUserId(@Param('id, userId') id: string, userId: string) {
-        return this.bookingService.getSingleBookingByUserId(id, userId);
+    async getSingleBookingByUserId(@Req() req: RequestWithUser, @Param('id') id: string) {
+        return this.bookingService.getSingleBookingByUserId(req, id);
     }
 
     @Post(':userId')
     async createBooking(@Param('userId') userId: string, @Body() booking: CreateEditBookingDto) {
-        return this.bookingService.createBooking(userId, booking);
+        return this.bookingService.createBooking(booking);
     }
 
 

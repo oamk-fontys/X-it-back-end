@@ -36,7 +36,7 @@ export class BookingService {
     }
 
 
-    public async CreateBooking(body: CreateEditBookingDto) {
+    public async createBooking(body: CreateEditBookingDto) {
         if (body.userId) {
             const user = await this.prisma.user.findUnique({
                 where: { id: body.userId },
