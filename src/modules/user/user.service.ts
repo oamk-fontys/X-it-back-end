@@ -1,24 +1,21 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { hash } from "bcrypt";
-import { RegisterDto } from "src/core/auth/dto/register.dto";
-import { PrismaService } from "src/core/database/prisma.service";
-import { CreateEditUserDto } from "./dto/create-edit-user.dto";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { hash } from 'bcrypt';
+import { RegisterDto } from 'src/core/auth/dto/register.dto';
+import { PrismaService } from 'src/core/database/prisma.service';
+import { CreateEditUserDto } from './dto/create-edit-user.dto';
 
 @Injectable()
-export class UserService { 
+export class UserService {
   constructor(private readonly prisma: PrismaService) {}
-
 
   public async getUsers() {
     return this.prisma.user.findMany();
   }
 
-
   public async getUserById(id: string) {
-    const user =  await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { id },
     });
-
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -69,14 +66,14 @@ export class UserService {
   }
 
   public async getUserByEmail(email: string) {
-    const user =  await this.prisma.user.findUnique({
+    return await this.prisma.user.findUnique({
       where: { email },
     });
+  }
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    return user;
+  public async getUserByAccessCode(accessCode: string) {
+    return await this.prisma.user.findUnique({
+      where: { accessCode },
+    });
   }
 }

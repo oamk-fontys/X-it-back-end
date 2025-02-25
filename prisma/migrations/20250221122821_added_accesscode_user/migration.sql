@@ -5,4 +5,5 @@
 
 */
 -- AlterTable
-ALTER TABLE "User" DROP COLUMN "companyId";
+ALTER TABLE "User" DROP COLUMN "companyId",
+ADD COLUMN     "accessCode" TEXT;
