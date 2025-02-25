@@ -7,4 +7,4 @@ import { PrismaService } from "src/core/database/prisma.service";
     controllers: [BookingController],
     providers: [BookingService, PrismaService],
 })
-export class BookigModule { }
+export class BookingModule { }
