@@ -18,7 +18,6 @@ export class BookingService {
         });
     }
 
-
     @IsAuthenticated()
     public async getSingleBookingByUserId(@Req() req: RequestWithUser, id: string) {
         const booking = await this.prisma.booking.findFirst({
@@ -55,7 +54,6 @@ export class BookingService {
 
         return newBooking;
     }
-
 
     public async updateBooking(id: string, body: CreateEditBookingDto) {
         if (body.userId) {
