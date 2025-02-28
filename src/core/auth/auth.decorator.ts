@@ -11,6 +11,6 @@ export function IsAuthenticated(roles: Role | Role[] = Role.USER) {
   return applyDecorators(
     Roles(...roleArray),
     UseGuards(AuthGuard),
-    ApiBearerAuth() // Voeg ApiBearerAuth toe hier
+    ApiBearerAuth()
   );
 }

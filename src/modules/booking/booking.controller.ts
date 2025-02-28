@@ -8,23 +8,27 @@ import { IsAuthenticated } from "src/core/auth/auth.decorator";
 export class BookingController {
     constructor(private readonly bookingService: BookingService) { }
 
-    @Get(':userId')
+    @Get()
     @IsAuthenticated()
-    async getAllBookingsByUserId(@Req() req: RequestWithUser, @Param('userId') userId: string) {
-        return this.bookingService.getAllBookingsByUserId(req);
+    async getAllBookingsByUserId(@Req() req: RequestWithUser) {
+        const userId = req.user.id;
+        return this.bookingService.getAllBookingsByUserId(userId);
     }
 
-    @Get(':userId/booking/:id')
+    @Get('booking/:id')
     @IsAuthenticated()
-    async getSingleBookingByUserId(@Req() req: RequestWithUser, @Param('userId') userId: string, @Param('id') id: string) {
-        return this.bookingService.getSingleBookingByUserId(req, id);
+    async getSingleBookingByUserId(@Req() req: RequestWithUser, @Param('id') id: string) {
+        const userId = req.user.id;
+        return this.bookingService.getSingleBookingByUserId(userId, id);
     }
 
     @Post()
     @IsAuthenticated()
-    async createBooking(@Body() booking: CreateEditBookingDto) {
-        return this.bookingService.createBooking(booking);
+    async createBooking(@Req() req: RequestWithUser, @Body() booking: CreateEditBookingDto) {
+        const userId = req.user.id;
+        return this.bookingService.createBooking({ ...booking, userId });
     }
+
 
     @Put(':id')
     @IsAuthenticated()

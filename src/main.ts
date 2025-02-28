@@ -13,7 +13,7 @@ async function bootstrap() {
     .setTitle('X-it API')
     .setDescription('The X-it API description')
     .setVersion('1.0')
-    .addBearerAuth() // Voeg JWT Bearer Auth toe
+    .addBearerAuth()
     .build();
 
   app.useGlobalPipes(new ValidationPipe());

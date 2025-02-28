@@ -9,21 +9,20 @@ export class BookingService {
 
     constructor(private readonly prisma: PrismaService) { }
 
-    @IsAuthenticated()
-    public async getAllBookingsByUserId(@Req() req: RequestWithUser) {
+    public async getAllBookingsByUserId(userId: string) {
         return await this.prisma.booking.findMany({
             where: {
-                userId: req.user.id
+                userId: userId
             }
         });
     }
 
     @IsAuthenticated()
-    public async getSingleBookingByUserId(@Req() req: RequestWithUser, id: string) {
+    public async getSingleBookingByUserId(userId: string, id: string) {
         const booking = await this.prisma.booking.findFirst({
             where: {
                 id: id,
-                userId: req.user.id
+                userId: userId
             },
         });
 
