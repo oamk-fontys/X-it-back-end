@@ -66,7 +66,7 @@ export class BookingService {
             data: {
                 userId: userId,
                 roomId: roomId.toString(),
-                bookingState: BookingState.SCHEDULED,
+                state: BookingState.SCHEDULED,
             },
         });
 
@@ -120,7 +120,7 @@ export class BookingService {
         return await this.prisma.booking.update({
             where: { id },
             data: {
-                bookingState: BookingState.CANCELLED, // Gebruik de enum voor typeveiligheid
+                state: BookingState.CANCELLED, // Gebruik de enum voor typeveiligheid
             },
         });
     }

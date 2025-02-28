@@ -12,21 +12,21 @@ export class BookingController {
     @IsAuthenticated()
     async getAllBookingsByUserId(@Req() req: RequestWithUser) {
         const userId = req.user.id;
-        return this.bookingService.getAllBookingsByUserId(userId);
+        return this.bookingService.getAllBookingsByUserId(req.user.id);
     }
 
-    @Get('booking/:id')
+    @Get('id')
     @IsAuthenticated()
     async getSingleBookingByUserId(@Req() req: RequestWithUser, @Param('id') id: string) {
         const userId = req.user.id;
-        return this.bookingService.getSingleBookingByUserId(userId, id);
+        return this.bookingService.getSingleBookingByUserId(req.user.id, id);
     }
 
     @Post()
     @IsAuthenticated()
     async createBooking(@Req() req: RequestWithUser, @Body() booking: CreateEditBookingDto) {
         const userId = req.user.id;
-        return this.bookingService.createBooking(booking, userId);
+        return this.bookingService.createBooking(booking, req.user.id);
     }
 
 
