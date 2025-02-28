@@ -76,4 +76,12 @@ export class UserService {
       where: { accessCode },
     });
   }
+
+  public async doesUserExist(email: string, username: string) {
+    return (
+      (await this.prisma.user.count({
+        where: { OR: [{ email }, { username }] },
+      })) > 0
+    );
+  }
 }

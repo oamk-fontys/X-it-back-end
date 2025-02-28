@@ -44,11 +44,14 @@ export class AuthService {
       );
     }
 
-    const existingUser = await this.userService.getUserByEmail(body.email);
+    const duplicatedAccount = await this.userService.doesUserExist(
+      body.email,
+      body.username,
+    );
 
-    if (existingUser) {
+    if (duplicatedAccount) {
       throw new BadRequestException(
-        'There is already an account with this email',
+        'There is already an account with this email or username',
       );
     }
 
