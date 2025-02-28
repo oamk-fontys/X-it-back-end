@@ -19,6 +19,16 @@ enum Role {
   COMPANY
 }
 
+enum WeekDay {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
 model User {
   id          String   @id @default(uuid())
   email       String   @unique
@@ -71,11 +81,23 @@ model Company {
 }
 
 model Room {
-  id          String   @id @default(uuid())
+  id          String     @id @default(uuid())
   name        String
   description String
   companyId   String
-  company     Company? @relation(fields: [companyId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  company     Company?   @relation(fields: [companyId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  TimeSlot    TimeSlot[]
+  duration    Int
+  cleanUpTime Int
+}
+
+model TimeSlot {
+  id     String   @id @default(uuid())
+  start  DateTime
+  end    DateTime
+  roomId String
+  room   Room     @relation(fields: [roomId], references: [id])
+  day    WeekDay
 }

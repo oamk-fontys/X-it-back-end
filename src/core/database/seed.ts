@@ -103,6 +103,8 @@ async function main() {
                 name: faker.commerce.productName(),
                 description: faker.lorem.sentence(),
                 companyId: company.id,
+                duration: faker.number.int({ min: 30, max: 180 }), // Duration in minutes (30min to 3h)
+                cleanUpTime: faker.number.int({ min: 5, max: 30 }), // Cleanup time in minutes
               },
             });
           }),
