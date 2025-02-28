@@ -3,16 +3,21 @@ import { PrismaService } from "src/core/database/prisma.service";
 import { CreateEditBookingDto } from "./dto/create-edit-booking.dto";
 import { IsAuthenticated } from "src/core/auth/auth.decorator";
 import { BookingState } from "@prisma/client";
+import { UserService } from "../user/user.service";
+import { RoomService } from "../room/room.service";
 
 @Injectable()
 export class BookingService {
 
-    constructor(private readonly prisma: PrismaService) { }
+    constructor(private readonly prisma: PrismaService, private readonly userService: UserService, private readonly roomService: RoomService) { }
 
     public async getAllBookingsByUserId(userId: string) {
         return await this.prisma.booking.findMany({
             where: {
                 userId: userId
+            },
+            include: {
+                room: true
             }
         });
     }
@@ -34,34 +39,25 @@ export class BookingService {
     }
 
     public async createBooking(body: CreateEditBookingDto, userId: string) {
-        // Haal roomId en userId uit de DTO
-        const roomId = body.roomDto.id;
-        const userFromDto = body.userDto.id;
+        if (body.user.id !== userId) {
+            throw new ForbiddenException('User mismatch: You can only create bookings for yourself');
+        }
+        const roomId = body.room.id;
 
-        // Controleer of de gebruiker uit de DTO overeenkomt met de geauthenticeerde gebruiker
-        if (userFromDto !== userId) {
+        if (body.user.id !== userId) {
             throw new ForbiddenException('User mismatch: You can only create bookings for yourself');
         }
 
-        // Controleer of de gebruiker bestaat
-        const user = await this.prisma.user.findUnique({
-            where: { id: userId },
-        });
-
-        if (!user) {
+        const userExists = await this.userService.doesUserExist(userId);
+        if (!userExists) {
             throw new NotFoundException('User not found');
         }
 
-        // Controleer of de kamer bestaat
-        const room = await this.prisma.room.findUnique({
-            where: { id: roomId.toString() },
-        });
-
-        if (!room) {
+        const roomExists = await this.roomService.doesRoomExist(roomId.toString());
+        if (!roomExists) {
             throw new NotFoundException('Room not found');
         }
 
-        // Maak een nieuwe booking met BookingState standaard op SCHEDULED
         const newBooking = await this.prisma.booking.create({
             data: {
                 userId: userId,
@@ -73,12 +69,12 @@ export class BookingService {
         return newBooking;
     }
 
-
-
     public async updateBooking(id: string, body: CreateEditBookingDto, userId: string) {
-        const user = await this.prisma.user.findUnique({
-            where: { id: userId },
-        });
+        const user = await this.userService.getUserById(userId);
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
 
         if (!user) {
             throw new NotFoundException('User not found');
@@ -99,15 +95,14 @@ export class BookingService {
         return await this.prisma.booking.update({
             where: { id },
             data: {
-                ...body,
-                userId,
+                userId: body.user.id,
+                roomId: body.room.id.toString(),
             },
         });
     }
 
 
     public async cancelBooking(id: string) {
-        // Controleer of de booking bestaat
         const bookingToCancel = await this.prisma.booking.findUnique({
             where: { id },
         });
@@ -116,11 +111,10 @@ export class BookingService {
             throw new NotFoundException('Booking not found');
         }
 
-        // Update de status naar BookingState.CANCELLED
         return await this.prisma.booking.update({
             where: { id },
             data: {
-                state: BookingState.CANCELLED, // Gebruik de enum voor typeveiligheid
+                state: BookingState.CANCELLED,
             },
         });
     }

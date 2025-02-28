@@ -79,4 +79,12 @@ export class RoomService {
             where: { id },
         });
     }
+
+    public async doesRoomExist(roomId: string): Promise<boolean> {
+        const count = await this.prisma.room.count({
+            where: { id: roomId },
+        });
+        return count > 0;
+    }
+
 }
