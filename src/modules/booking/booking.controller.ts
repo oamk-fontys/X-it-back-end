@@ -26,19 +26,20 @@ export class BookingController {
     @IsAuthenticated()
     async createBooking(@Req() req: RequestWithUser, @Body() booking: CreateEditBookingDto) {
         const userId = req.user.id;
-        return this.bookingService.createBooking({ ...booking, userId });
+        return this.bookingService.createBooking(booking, userId);
     }
 
 
     @Put(':id')
     @IsAuthenticated()
-    async updateBooking(@Param('id') id: string, @Body() booking: CreateEditBookingDto) {
-        return this.bookingService.updateBooking(id, booking);
+    async updateBooking(@Req() req: RequestWithUser, @Param('id') id: string, @Body() booking: CreateEditBookingDto) {
+        const userId = req.user.id;
+        return this.bookingService.updateBooking(id, booking, userId);
     }
 
     @Delete(':id')
     @IsAuthenticated()
     async deleteBooking(@Param('id') id: string) {
-        return this.bookingService.deleteBooking(id);
+        return this.bookingService.cancelBooking(id);
     }
 }
