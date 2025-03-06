@@ -5,7 +5,7 @@ import { CreateGameDto, UpdateGameDto } from './dto/game.dto';
 
 @Injectable()
 export class GameService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   // Create a new game
   async createGame(createGameDto: CreateGameDto): Promise<Game> {
@@ -28,7 +28,7 @@ export class GameService {
       where: { id: gameId },
       include: {
         players: true, // Include players in the game
-        statistics: true, // Include statistics if available
+        //statistics: true, 
       },
     });
   }
@@ -42,4 +42,3 @@ export class GameService {
     });
   }
 }
-
