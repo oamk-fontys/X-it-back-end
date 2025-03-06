@@ -1,24 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../core/database/prisma.service';
 import { Game } from '@prisma/client';
-import { CreateGameDto, UpdateGameDto } from './dto/game.dto';
+import { GameDto } from './dto/game.dto';
 
 @Injectable()
 export class GameService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   // Create a new game
-  async createGame(createGameDto: CreateGameDto): Promise<Game> {
+  async createGame(gameDto: GameDto): Promise<Game> {
     return this.prisma.game.create({
-      data: createGameDto,
+      data: gameDto,
     });
   }
 
   // Update an existing game
-  async updateGame(gameId: string, updateGameDto: UpdateGameDto): Promise<Game> {
+  async updateGame(gameId: string, gameDto: Partial<GameDto>): Promise<Game> {
     return this.prisma.game.update({
       where: { id: gameId },
-      data: updateGameDto,
+      data: gameDto,
     });
   }
 
@@ -28,7 +28,6 @@ export class GameService {
       where: { id: gameId },
       include: {
         players: true, // Include players in the game
-        //statistics: true, 
       },
     });
   }

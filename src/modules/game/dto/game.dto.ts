@@ -1,38 +1,44 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { Exclude, Expose } from 'class-transformer';
 import { IsDateString, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateGameDto {
+@Exclude()
+export class GameDto {
+  @Expose()
+  @ApiProperty({
+    description: 'The name of the team',
+    example: 'Team A',
+  })
   @IsString()
   @IsNotEmpty()
   teamName: string;
 
+  @Expose()
+  @ApiProperty({
+    description: 'The ID of the room',
+    example: 'room123',
+  })
   @IsString()
   @IsNotEmpty()
   roomId: string;
 
+  @Expose()
+  @ApiProperty({
+    description: 'The start time of the game',
+    example: '2025-03-07T14:30:00Z',
+    required: false,
+  })
   @IsDateString()
   @IsOptional()
-  startTime?: Date;
+  startTime?: string;
 
+  @Expose()
+  @ApiProperty({
+    description: 'The end time of the game',
+    example: '2025-03-07T16:00:00Z',
+    required: false,
+  })
   @IsDateString()
   @IsOptional()
-  endTime?: Date;
+  endTime?: string;
 }
-
-export class UpdateGameDto {
-  @IsString()
-  @IsOptional()
-  teamName?: string;
-
-  @IsString()
-  @IsOptional()
-  roomId?: string;
-
-  @IsDateString()
-  @IsOptional()
-  startTime?: Date;
-
-  @IsDateString()
-  @IsOptional()
-  endTime?: Date;
-}
-

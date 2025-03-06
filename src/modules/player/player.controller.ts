@@ -3,7 +3,7 @@ import { PlayerService } from './player.service';
 import { Player } from '@prisma/client';
 import { CreatePlayerDto, UpdatePlayerDto } from './dto/player.dto';
 
-@Controller('players')
+@Controller('Player')
 export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
 
