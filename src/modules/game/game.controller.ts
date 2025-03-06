@@ -1,48 +1,38 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Delete } from '@nestjs/common';
 import { GameService } from './game.service';
-import { CreateGameDto, UpdateGameDto } from './dto/game.dto';
-import { Game } from '@prisma/client';
+import { CreateEditGameDto } from './dto/create-edit-game.dto';
 
-@Controller('games')
+@Controller('game')
 export class GameController {
-  constructor(private readonly gameService: GameService) {}
-
-  // Create a new game
-  @Post()
-  async createGame(@Body() createGameDto: CreateGameDto): Promise<Game> {
-    return this.gameService.createGame(createGameDto);
-  }
-
-  // Update a game
-  @Patch(':gameId')
-  async updateGame(
-    @Param('gameId') gameId: string,
-    @Body() updateGameDto: UpdateGameDto
-  ): Promise<Game> {
-    return this.gameService.updateGame(gameId, updateGameDto);
-  }
-
-  // Automatically set startTime
-  @Patch(':gameId/start')
-  async startGame(@Param('gameId') gameId: string): Promise<Game> {
-    return this.gameService.updateGame(gameId, { startTime: new Date() });
-  }
-
-  // Automatically set endTime
-  @Patch(':gameId/end')
-  async endGame(@Param('gameId') gameId: string): Promise<Game> {
-    return this.gameService.updateGame(gameId, { endTime: new Date() });
-  }
-
-  // Get a game by ID
-  @Get(':gameId')
-  async getGameById(@Param('gameId') gameId: string): Promise<Game | null> {
-    return this.gameService.getGameById(gameId);
-  }
+  constructor(private readonly gameService: GameService) { }
 
   // Get all games
   @Get()
-  async getAllGames(): Promise<Game[]> {
-    return this.gameService.getAllGames();
+  async getGames() {
+    return this.gameService.getGames();
+  }
+
+  // Get game by ID
+  @Get(':id')
+  async getGameById(@Param('id') id: string) {
+    return this.gameService.getGameById(id);
+  }
+
+  // Create a new game
+  @Post()
+  async createGame(@Body() body: CreateEditGameDto) {
+    return this.gameService.createGame(body);
+  }
+
+  // Update an existing game
+  @Put(':id')
+  async updateGame(@Param('id') id: string, @Body() body: CreateEditGameDto) {
+    return this.gameService.updateGame(id, body);
+  }
+
+  // Delete a game
+  @Delete(':id')
+  async deleteGame(@Param('id') id: string) {
+    return this.gameService.deleteGame(id);
   }
 }
