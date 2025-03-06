@@ -8,4 +8,4 @@ import { PrismaService } from '../../core/database/prisma.service';
   providers: [GameService, PrismaService],
   exports: [GameService],
 })
-export class GameModule {}
+export class GameModule { }

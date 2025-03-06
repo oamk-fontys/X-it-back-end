@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../core/database/prisma.service';
 import { Game } from '@prisma/client';
+import { CreateEditGameDto } from './dto/create-edit-game.dto';
 import { GameDto } from './dto/game.dto';
 
 @Injectable()
@@ -32,12 +33,18 @@ export class GameService {
     });
   }
 
-  // Get all games
-  async getAllGames(): Promise<Game[]> {
-    return this.prisma.game.findMany({
-      include: {
-        players: true,
-      },
+  // Delete a game
+  public async deleteGame(id: string) {
+    const gameToDelete = await this.prisma.game.findUnique({
+      where: { id },
+    });
+
+    if (!gameToDelete) {
+      throw new NotFoundException('Game not found');
+    }
+
+    return await this.prisma.game.delete({
+      where: { id },
     });
   }
 }
