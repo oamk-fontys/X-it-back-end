@@ -79,3 +79,33 @@ model Room {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+
+
+model Game {
+  id         String     @id @default(uuid())  // Unique identifier for the game
+  teamName   String     // The team name playing the game
+  roomId     String     // The room where the game will take place
+  startTime  DateTime?  // Optional: Set when the game starts
+  endTime    DateTime?  // Optional: Set when the game ends
+  createdAt  DateTime   @default(now())  // Auto-set when the game is created
+  updatedAt  DateTime   @updatedAt       // Auto-set when the game is updated
+
+  room       Room       @relation(fields: [roomId], references: [id]) // Relationship to Room
+  players    Player[]   // Players in the game (users or guests)
+  booking    Booking?   // Optional relation to a Booking model (if game is booked)
+  statistics Statistic? // Optional game statistics (scores, completion time, etc.)
+}
+
+
+model Player {
+  id       String  @id @default(uuid())  // Unique identifier for each player
+  userId   String?                         // Nullable: Player may or may not be a registered user
+  gameId   String                           // Every player belongs to a game
+  isGuest  Boolean @default(false)          // True if the player is not a registered user
+  isAdult  Boolean                          // Indicates if the player is an adult
+  
+  user     User?   @relation(fields: [userId], references: [id]) // Connects to User model
+  game     Game    @relation(fields: [gameId], references: [id]) // Connects to Game model
+}
+
