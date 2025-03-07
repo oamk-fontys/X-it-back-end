@@ -6,6 +6,15 @@ import { IsDateString, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 export class GameDto {
   @Expose()
   @ApiProperty({
+    description: 'The unique ID of the game',
+    example: 'a3320ee0-7b48-4119-8569-a7d142046fd1',
+  })
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+
+  @Expose()
+  @ApiProperty({
     description: 'The name of the team',
     example: 'Team A',
   })
@@ -16,7 +25,8 @@ export class GameDto {
   @Expose()
   @ApiProperty({
     description: 'The ID of the room',
-    example: 'room123',
+    //uuid
+    example: '617949f8-0c4e-4bb8-b13b-c24fd5175f3b',
   })
   @IsString()
   @IsNotEmpty()

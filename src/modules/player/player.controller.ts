@@ -1,42 +1,52 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PlayerService } from './player.service';
-import { Player } from '@prisma/client';
-import { CreatePlayerDto, UpdatePlayerDto } from './dto/player.dto';
+import { CreateEditPlayerDto } from './dto/create-edit-player.dto';
+import { PlayerDto } from './dto/player.dto';
 
-@Controller('Player')
+@ApiTags('Player')
+@Controller('player')
 export class PlayerController {
-  constructor(private readonly playerService: PlayerService) {}
-
-  // Add a player to a game (Uses DTO for validation & type safety)
-  @Post('add')
-  async addPlayer(@Body() createPlayerDto: CreatePlayerDto): Promise<Player> {
-    return this.playerService.createPlayer(createPlayerDto);
-  }
-
-  // Update player information (Uses DTO for partial updates)
-  @Patch(':playerId')
-  async updatePlayer(
-    @Param('playerId') playerId: string,
-    @Body() updatePlayerDto: UpdatePlayerDto
-  ): Promise<Player> {
-    return this.playerService.updatePlayer(playerId, updatePlayerDto);
-  }
+  constructor(private readonly playerService: PlayerService) { }
 
   // Get a player by ID
-  @Get(':playerId')
-  async getPlayerById(@Param('playerId') playerId: string): Promise<Player | null> {
-    return this.playerService.getPlayerById(playerId);
+  @Get(':id')
+  @ApiOkResponse({
+    description: 'Retrieve a player by ID',
+    type: PlayerDto,
+  })
+  async getPlayerById(@Param('id') id: string) {
+    return this.playerService.getPlayerById(id);
   }
 
   // Get all players in a specific game
   @Get('game/:gameId')
-  async getPlayersByGame(@Param('gameId') gameId: string): Promise<Player[]> {
+  @ApiResponse({
+    status: 200,
+    description: 'Retrieve all players in a specific game',
+    type: [PlayerDto],
+  })
+  async getPlayersByGame(@Param('gameId') gameId: string) {
     return this.playerService.getPlayersByGame(gameId);
   }
 
+  // Create a new player in a game
+  @Post()
+  @ApiResponse({
+    status: 201,
+    description: 'Create a new player in a game',
+    type: PlayerDto,
+  })
+  async createPlayer(@Body() body: CreateEditPlayerDto) {
+    return this.playerService.createPlayer(body);
+  }
+
   // Delete a player by ID
-  @Delete(':playerId')
-  async deletePlayer(@Param('playerId') playerId: string): Promise<Player> {
-    return this.playerService.deletePlayer(playerId);
+  @Delete(':id')
+  @ApiOkResponse({
+    description: 'Delete a player from the game',
+  })
+  async deletePlayer(@Param('id') id: string) {
+    return this.playerService.deletePlayer(id);
   }
 }
