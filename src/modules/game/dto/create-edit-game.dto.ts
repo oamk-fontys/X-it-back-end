@@ -32,7 +32,7 @@ export class CreateEditGameDto {
         type: String,
         required: false,
     })
-    startTime?: Date;
+    startTime?: string;
 
     @Expose()
     @IsOptional()
@@ -43,5 +43,5 @@ export class CreateEditGameDto {
         type: String,
         required: false,
     })
-    endTime?: Date;
+    endTime?: string;
 }
