@@ -28,10 +28,10 @@ export class CreateEditCompanyDto {
     @IsNotEmpty()
     @ApiProperty({
         description: 'The owner',
-        example: ' UserId 76dcdb77-5522-4deb-b8ba-8bc4b16892a3, createdAt 2025-02-28 09:52:47.314, dateOfBirth 2017-06-07 14:34:08.700, email test@example.com, firstName Test, lastName User, password password123',
+        example: '',
         type: UserDto,
     })
-    userDto: UserDto;
+    owner: UserDto;
 
     @Expose()
     @IsNotEmpty()
