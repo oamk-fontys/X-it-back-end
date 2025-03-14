@@ -34,6 +34,10 @@ export class BookingController {
     }
 
     @Post()
+    @ApiOkResponse({
+        description: 'create a booking',
+        type: CreateEditBookingDto,
+    })
     @IsAuthenticated()
     async createBooking(@Req() req: RequestWithUser, @Body() booking: CreateEditBookingDto) {
         const userId = req.user.id;
@@ -42,6 +46,10 @@ export class BookingController {
 
 
     @Put(':id')
+    @ApiOkResponse({
+        description: 'update a booking',
+        type: CreateEditBookingDto,
+    })
     @IsAuthenticated()
     async updateBooking(@Req() req: RequestWithUser, @Param('id') id: string, @Body() booking: CreateEditBookingDto) {
         const userId = req.user.id;
@@ -49,6 +57,10 @@ export class BookingController {
     }
 
     @Delete(':id')
+    @ApiOkResponse({
+        description: 'delete a booking',
+        type: BookingDto,
+    })
     @IsAuthenticated()
     async deleteBooking(@Param('id') id: string) {
         return this.bookingService.cancelBooking(id);
