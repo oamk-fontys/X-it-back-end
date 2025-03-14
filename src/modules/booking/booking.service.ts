@@ -39,16 +39,17 @@ export class BookingService {
     }
 
     public async createBooking(body: CreateEditBookingDto, userId: string) {
-        if (body.user.id !== userId) {
+        if (body.userId !== userId) {
             throw new ForbiddenException('User mismatch: You can only create bookings for yourself');
         }
-        const roomId = body.room.id;
+        const roomId = body.roomId;
 
-        if (body.user.id !== userId) {
+        if (body.userId !== userId) {
             throw new ForbiddenException('User mismatch: You can only create bookings for yourself');
         }
 
-        const userExists = await this.userService.doesUserExist(userId);
+        const user = await this.userService.getUserById(userId);
+        const userExists = await this.userService.doesUserExist(user.email, user.username);
         if (!userExists) {
             throw new NotFoundException('User not found');
         }
@@ -95,8 +96,8 @@ export class BookingService {
         return await this.prisma.booking.update({
             where: { id },
             data: {
-                userId: body.user.id,
-                roomId: body.room.id.toString(),
+                userId: body.userId,
+                roomId: body.roomId.toString(),
             },
         });
     }
