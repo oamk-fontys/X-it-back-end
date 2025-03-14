@@ -1,4 +1,5 @@
 import { SetMetadata, UseGuards, applyDecorators } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { AuthGuard } from './auth.guard';
 
@@ -9,6 +10,7 @@ export function IsAuthenticated(roles: Role | Role[] = Role.USER) {
   const roleArray = Array.isArray(roles) ? roles : [roles];
   return applyDecorators(
     Roles(...roleArray),
-    UseGuards(AuthGuard)
+    UseGuards(AuthGuard),
+    ApiBearerAuth()
   );
 }

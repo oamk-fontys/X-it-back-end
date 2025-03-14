@@ -1,6 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude, Expose } from "class-transformer";
 import { IsNotEmpty } from "class-validator";
+import { create } from "domain";
+import { UserDto } from "src/modules/user/dto/user.dto";
 
 @Exclude()
 export class CreateEditCompanyDto {
@@ -26,8 +28,8 @@ export class CreateEditCompanyDto {
     @Expose()
     @IsNotEmpty()
     @ApiProperty({
-        description: 'The id of the owner',
-        example: '3',
+        description: 'The owner',
+        example: '76dcdb77-5522-4deb-b8ba-8bc4b16892a3',
         type: String,
     })
     ownerId: string;

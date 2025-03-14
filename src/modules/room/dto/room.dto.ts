@@ -3,7 +3,7 @@ import { Exclude, Expose } from "class-transformer";
 import { IsNotEmpty } from "class-validator";
 
 @Exclude()
-export class CreateEditRoomDto {
+export class RoomDto {
 
     @Expose()
     @IsNotEmpty()

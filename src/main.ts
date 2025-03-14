@@ -13,14 +13,17 @@ async function bootstrap() {
     .setTitle('X-it API')
     .setDescription('The X-it API description')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   app.useGlobalPipes(new ValidationPipe());
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
   const port = process.env.PORT ?? 3000;
   Logger.log(`Server is running on port ${port}`, 'NestApplication');
   await app.listen(port);
 }
+
 bootstrap();
