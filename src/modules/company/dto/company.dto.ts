@@ -5,6 +5,14 @@ import { IsNotEmpty } from 'class-validator';
 @Exclude()
 export class CompanyDto {
   @Expose()
+  @ApiProperty({
+    description: 'company id',
+    example: '4',
+    type: String,
+  })
+  id: string;
+
+  @Expose()
   @IsNotEmpty()
   @ApiProperty({
     description: 'The name of the company',
@@ -25,20 +33,20 @@ export class CompanyDto {
   @Expose()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'The id of the owner',
-    example: '3',
-    type: Number,
-  })
-  ownerId: number;
-
-  @Expose()
-  @IsNotEmpty()
-  @ApiProperty({
     description: 'The city of the company',
     example: 'Amsterdam',
     type: String,
   })
   city: string;
+
+  @Expose()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The owner',
+    example: '98b98e99-8aae-4217-979a-1abf64774ade',
+    type: String,
+  })
+  ownerId: string;
 
   @Expose()
   @IsNotEmpty()
@@ -92,12 +100,4 @@ export class CompanyDto {
     type: Date,
   })
   updatedAt: Date;
-
-  @Expose()
-  @ApiProperty({
-    description: 'company id',
-    example: '4',
-    type: String,
-  })
-  id: string;
 }

@@ -29,22 +29,31 @@ enum WeekDay {
   SUNDAY
 }
 
+enum BookingState {
+  SCHEDULED
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
 model User {
-  id          String   @id @default(uuid())
-  email       String   @unique
+  id          String    @id @default(uuid())
+  email       String    @unique
   password    String
-  username    String   @unique
+  username    String    @unique
   firstName   String
   lastName    String
   phoneNumber String
   dateOfBirth DateTime
-  role        Role     @default(USER)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  role        Role      @default(USER)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   pets        Pet[]
-  Company     Company? @relation(fields: [companyId], references: [id])
+  Company     Company?  @relation(fields: [companyId], references: [id])
   companyId   String?
-  accessCode  String?  @unique
+  accessCode  String?   @unique
+  Booking     Booking[]
+  Player      Player[]
 }
 
 // THIS IS NOT PART OF THE APPLICATION JUST AN EXAMPLE TO SHOW MODULES
@@ -65,7 +74,7 @@ model Pet {
 }
 
 model Company {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   name        String
   address     String
   city        String
@@ -74,10 +83,11 @@ model Company {
   description String
   ownerId     String?
   verified    Boolean
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   Room        Room[]
   User        User[]
+  Booking     Booking[]
 }
 
 model Room {
@@ -91,6 +101,8 @@ model Room {
   TimeSlot    TimeSlot[]
   duration    Int
   cleanUpTime Int
+  Booking     Booking[]
+  Game        Game[]
 }
 
 model TimeSlot {
@@ -107,4 +119,42 @@ enum TimeSlotStatus {
   BOOKED
   AVAILABLE
   CANCELLED
+}
+
+model Booking {
+  id        String       @id @default(uuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id])
+  roomId    String
+  room      Room         @relation(fields: [roomId], references: [id])
+  state     BookingState @default(SCHEDULED)
+  companyId String?
+  company   Company?     @relation(fields: [companyId], references: [id])
+  Game      Game[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model Game {
+  id        String    @id @default(uuid())
+  teamName  String
+  roomId    String
+  startTime DateTime?
+  endTime   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  room      Room      @relation(fields: [roomId], references: [id])
+  players   Player[]
+  Booking   Booking?  @relation(fields: [bookingId], references: [id])
+  bookingId String?
+}
+
+model Player {
+  id      String  @id @default(uuid())
+  userId  String?
+  gameId  String
+  isGuest Boolean @default(false)
+  isAdult Boolean
+  user    User?   @relation(fields: [userId], references: [id])
+  game    Game    @relation(fields: [gameId], references: [id])
 }
