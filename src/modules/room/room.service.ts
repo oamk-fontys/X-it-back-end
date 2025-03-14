@@ -8,12 +8,19 @@ export class RoomService {
     constructor(private readonly prisma: PrismaService) { }
 
     public async getRooms() {
-        return await this.prisma.room.findMany();
+        return await this.prisma.room.findMany({
+            include: {
+                company: true
+            }
+        });
     }
 
     public async getRoomById(id: string) {
         const room = await this.prisma.room.findUnique({
             where: { id },
+            include: {
+                company: true
+            }
         });
 
         if (!room) {
