@@ -56,7 +56,7 @@ export class BookingController {
         return this.bookingService.updateBooking(id, booking, userId);
     }
 
-    @Delete(':id')
+    @Put(':id')
     @ApiOkResponse({
         description: 'delete a booking',
         type: BookingDto,
