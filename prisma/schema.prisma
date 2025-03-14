@@ -43,6 +43,7 @@ model User {
   companyId   String?
   accessCode  String?   @unique
   Booking     Booking[]
+  Player      Player[]
 }
 
 // THIS IS NOT PART OF THE APPLICATION JUST AN EXAMPLE TO SHOW MODULES
@@ -83,6 +84,7 @@ model Room {
   name        String
   description String
   companyId   String
+  <<<<<<< HEAD
   company     Company?  @relation(fields: [companyId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -98,4 +100,32 @@ model Booking {
   state     BookingState @default(SCHEDULED)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
+  =======
+  company   Company?     @relation(fields: [companyId], references: [id])
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  Game      Game[]
+}
+
+model Game {
+  id        String    @id @default(uuid())
+  teamName  String
+  roomId    String
+  startTime DateTime?
+  endTime   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  room      Room      @relation(fields: [roomId], references: [id])
+  players   Player[]
+}
+
+model Player {
+  id      String  @id @default(uuid())
+  userId  String?
+  gameId  String
+  isGuest Boolean @default(false)
+  isAdult Boolean
+  user    User?   @relation(fields: [userId], references: [id])
+  game    Game    @relation(fields: [gameId], references: [id])
+  >>>>>>> main
 }

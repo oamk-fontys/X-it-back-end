@@ -3,15 +3,26 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './core/auth/auth.module';
 import { PrismaService } from './core/database/prisma.service';
+import { BookingModule } from './modules/booking/booking.module';
 import { CompanyModule } from './modules/company/company.module';
+import { GameModule } from './modules/game/game.module';
 import { PetModule } from './modules/pet/pet.module';
+import { PlayerModule } from './modules/player/player.module';
 import { RoomModule } from './modules/room/room.module';
 import { UserModule } from './modules/user/user.module';
-import { BookingModule } from './modules/booking/booking.module';
 
 @Module({
-  imports: [PetModule, UserModule, AuthModule, CompanyModule, RoomModule, BookingModule],
+  imports: [
+    PetModule,
+    UserModule,
+    AuthModule,
+    CompanyModule,
+    RoomModule,
+    GameModule,
+    PlayerModule,
+    BookingModule,
+  ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })
-export class AppModule { }
+export class AppModule {}

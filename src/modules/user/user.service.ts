@@ -6,7 +6,7 @@ import { CreateEditUserDto } from './dto/create-edit-user.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   public async getUsers() {
     return this.prisma.user.findMany();
@@ -77,10 +77,11 @@ export class UserService {
     });
   }
 
-  public async doesUserExist(userId: string): Promise<boolean> {
-    const count = await this.prisma.user.count({
-      where: { id: userId },
-    });
-    return count > 0;
+  public async doesUserExist(email: string, username: string) {
+    return (
+      (await this.prisma.user.count({
+        where: { OR: [{ email }, { username }] },
+      })) > 0
+    );
   }
 }
