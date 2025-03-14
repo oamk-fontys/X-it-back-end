@@ -94,10 +94,17 @@ model Room {
 }
 
 model TimeSlot {
-  id     String   @id @default(uuid())
+  id     String         @id @default(uuid())
   start  DateTime
   end    DateTime
   roomId String
-  room   Room     @relation(fields: [roomId], references: [id])
+  room   Room           @relation(fields: [roomId], references: [id])
   day    WeekDay
+  status TimeSlotStatus @default(AVAILABLE)
+}
+
+enum TimeSlotStatus {
+  BOOKED
+  AVAILABLE
+  CANCELLED
 }

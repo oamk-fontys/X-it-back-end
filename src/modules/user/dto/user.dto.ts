@@ -1,7 +1,14 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Exclude, Expose } from "class-transformer";
-import { IsEmail, IsString, IsDate, IsEnum, IsPhoneNumber } from "class-validator";
-import { Role } from "@prisma/client";
+import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
+import { Exclude, Expose } from 'class-transformer';
+import {
+  IsDate,
+  IsEmail,
+  IsEnum,
+  IsPhoneNumber,
+  IsString,
+} from 'class-validator';
+import { CompanyDto } from 'src/modules/company/dto/company.dto';
 
 @Exclude()
 export class UserDto {
@@ -83,4 +90,11 @@ export class UserDto {
   })
   @IsDate()
   updatedAt: Date;
+
+  @Expose()
+  @ApiProperty({
+    description: 'The company of the user',
+    type: CompanyDto,
+  })
+  company: CompanyDto;
 }
