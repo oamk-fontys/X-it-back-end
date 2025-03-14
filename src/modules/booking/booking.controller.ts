@@ -36,7 +36,7 @@ export class BookingController {
     @Post()
     @ApiOkResponse({
         description: 'create a booking',
-        type: CreateEditBookingDto,
+        type: BookingDto,
     })
     @IsAuthenticated()
     async createBooking(@Req() req: RequestWithUser, @Body() booking: CreateEditBookingDto) {
@@ -48,7 +48,7 @@ export class BookingController {
     @Put(':id')
     @ApiOkResponse({
         description: 'update a booking',
-        type: CreateEditBookingDto,
+        type: BookingDto,
     })
     @IsAuthenticated()
     async updateBooking(@Req() req: RequestWithUser, @Param('id') id: string, @Body() booking: CreateEditBookingDto) {
