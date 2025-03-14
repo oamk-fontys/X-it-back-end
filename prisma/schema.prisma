@@ -64,7 +64,7 @@ model Pet {
 }
 
 model Company {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   name        String
   address     String
   city        String
@@ -73,10 +73,11 @@ model Company {
   description String
   ownerId     String?
   verified    Boolean
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   Room        Room[]
   User        User[]
+  Booking     Booking[]
 }
 
 model Room {
@@ -84,11 +85,11 @@ model Room {
   name        String
   description String
   companyId   String
-  <<<<<<< HEAD
   company     Company?  @relation(fields: [companyId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   Booking     Booking[]
+  Game        Game[]
 }
 
 model Booking {
@@ -98,13 +99,11 @@ model Booking {
   roomId    String
   room      Room         @relation(fields: [roomId], references: [id])
   state     BookingState @default(SCHEDULED)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  =======
+  companyId String?
   company   Company?     @relation(fields: [companyId], references: [id])
+  Game      Game[]
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
-  Game      Game[]
 }
 
 model Game {
@@ -117,6 +116,8 @@ model Game {
   updatedAt DateTime  @updatedAt
   room      Room      @relation(fields: [roomId], references: [id])
   players   Player[]
+  Booking   Booking?  @relation(fields: [bookingId], references: [id])
+  bookingId String?
 }
 
 model Player {
@@ -127,5 +128,4 @@ model Player {
   isAdult Boolean
   user    User?   @relation(fields: [userId], references: [id])
   game    Game    @relation(fields: [gameId], references: [id])
-  >>>>>>> main
 }
