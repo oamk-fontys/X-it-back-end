@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
+import { CompanyDto } from 'src/modules/company/dto/company.dto';
 
 @Exclude()
 export class RoomDto {
@@ -25,20 +26,10 @@ export class RoomDto {
   @Expose()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'The id of the company',
-    example: 'a3320ee0-7b48-4119-8569-a7d142046fd1',
-    type: String,
-  })
-  companyId: string;
-
-  @Expose()
-  @IsNotEmpty()
-  @ApiProperty({
     description: 'The company of the room',
-    example: 'Jumbo',
-    type: String,
+    type: CompanyDto,
   })
-  company: string;
+  company: CompanyDto;
 
   @Expose()
   @ApiProperty({

@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Param, Put, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Req } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { IsAuthenticated } from 'src/core/auth/auth.decorator';
 import { RequestWithUser } from 'src/core/auth/auth.guard';
+import { CreateEditTimeSlotDto } from './dto/create-edit-time-slot.dto';
 import { TimeSlotDto } from './dto/time-slot.dto';
-import { UpdateStatusDto } from './dto/update-status.dto';
 import { TimeSlotService } from './time-slot.service';
 
 @Controller('time-slots')
@@ -22,26 +22,22 @@ export class TimeSlotController {
     return this.timeSlotService.getTimeSlots(roomId);
   }
 
-  // @Post()
-  // @IsAuthenticated([Role.COMPANY, Role.ADMIN])
-  // async createTimeSlot(
-  //   @Param('roomId') roomId: string,
-  //   @Body() body: CreateTimeSlotDto,
-  // ) {
-  //   return this.timeSlotService.createTimeSlot(roomId, body);
-  // }
-
-  @Put(':timeSlotId/status')
-  @ApiOkResponse({
-    description: 'The time slot status',
-    type: TimeSlotDto,
-  })
+  @Post()
   @IsAuthenticated([Role.COMPANY, Role.ADMIN])
-  async updateStatus(
-    @Param('timeSlotId') timeSlotId: string,
-    @Body() body: UpdateStatusDto,
+  async createTimeSlot(
+    @Body() body: CreateEditTimeSlotDto,
     @Req() req: RequestWithUser,
   ) {
-    return this.timeSlotService.updateStatus(timeSlotId, body, req.user);
+    return this.timeSlotService.createTimeSlot(body, req.user);
+  }
+
+  @Put(':timeSlotId')
+  @IsAuthenticated([Role.COMPANY, Role.ADMIN])
+  async updateTimeSlot(
+    @Param('timeSlotId') timeSlotId: string,
+    @Body() body: CreateEditTimeSlotDto,
+    @Req() req: RequestWithUser,
+  ) {
+    return this.timeSlotService.updateTimeSlot(timeSlotId, body, req.user);
   }
 }

@@ -34,6 +34,7 @@ enum BookingState {
   IN_PROGRESS
   DONE
   CANCELLED
+  BLOCKED
 }
 
 model User {
@@ -106,13 +107,14 @@ model Room {
 }
 
 model TimeSlot {
-  id     String         @id @default(uuid())
-  start  DateTime
-  end    DateTime
-  roomId String
-  room   Room           @relation(fields: [roomId], references: [id])
-  day    WeekDay
-  status TimeSlotStatus @default(AVAILABLE)
+  id        String   @id @default(uuid())
+  start     String
+  end       String
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id])
+  day       WeekDay
+  bookingId String?
+  booking   Booking? @relation(fields: [bookingId], references: [id])
 }
 
 enum TimeSlotStatus {
@@ -133,6 +135,7 @@ model Booking {
   Game      Game[]
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
+  TimeSlot  TimeSlot[]
 }
 
 model Game {
