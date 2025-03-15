@@ -19,11 +19,22 @@ enum Role {
   COMPANY
 }
 
+enum WeekDay {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
 enum BookingState {
   SCHEDULED
   IN_PROGRESS
   DONE
   CANCELLED
+  BLOCKED
 }
 
 model User {
@@ -39,11 +50,11 @@ model User {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   pets        Pet[]
-  Company     Company?  @relation(fields: [companyId], references: [id])
+  company     Company?  @relation(fields: [companyId], references: [id])
   companyId   String?
   accessCode  String?   @unique
-  Booking     Booking[]
-  Player      Player[]
+  booking     Booking[]
+  player      Player[]
 }
 
 // THIS IS NOT PART OF THE APPLICATION JUST AN EXAMPLE TO SHOW MODULES
@@ -81,15 +92,35 @@ model Company {
 }
 
 model Room {
-  id          String    @id @default(uuid())
+  id          String     @id @default(uuid())
   name        String
   description String
   companyId   String
-  company     Company?  @relation(fields: [companyId], references: [id])
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  company     Company?   @relation(fields: [companyId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  TimeSlot    TimeSlot[]
+  duration    Int
+  cleanUpTime Int
   Booking     Booking[]
   Game        Game[]
+}
+
+model TimeSlot {
+  id        String   @id @default(uuid())
+  start     String
+  end       String
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id])
+  day       WeekDay
+  bookingId String?
+  booking   Booking? @relation(fields: [bookingId], references: [id])
+}
+
+enum TimeSlotStatus {
+  BOOKED
+  AVAILABLE
+  CANCELLED
 }
 
 model Booking {
@@ -104,6 +135,7 @@ model Booking {
   Game      Game[]
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
+  TimeSlot  TimeSlot[]
 }
 
 model Game {

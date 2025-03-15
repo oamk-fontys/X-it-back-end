@@ -9,6 +9,7 @@ import { GameModule } from './modules/game/game.module';
 import { PetModule } from './modules/pet/pet.module';
 import { PlayerModule } from './modules/player/player.module';
 import { RoomModule } from './modules/room/room.module';
+import { TimeSlotModule } from './modules/time-slot/time-slot.module';
 import { UserModule } from './modules/user/user.module';
 
 @Module({
@@ -18,6 +19,7 @@ import { UserModule } from './modules/user/user.module';
     AuthModule,
     CompanyModule,
     RoomModule,
+    TimeSlotModule,
     GameModule,
     PlayerModule,
     BookingModule,
