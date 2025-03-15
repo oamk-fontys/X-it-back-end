@@ -50,11 +50,11 @@ model User {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   pets        Pet[]
-  Company     Company?  @relation(fields: [companyId], references: [id])
+  company     Company?  @relation(fields: [companyId], references: [id])
   companyId   String?
   accessCode  String?   @unique
-  Booking     Booking[]
-  Player      Player[]
+  booking     Booking[]
+  player      Player[]
 }
 
 // THIS IS NOT PART OF THE APPLICATION JUST AN EXAMPLE TO SHOW MODULES
