@@ -86,9 +86,9 @@ model Company {
   verified    Boolean
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  Room        Room[]
-  User        User[]
-  Booking     Booking[]
+  room        Room[]
+  user        User[]
+  booking     Booking[]
 }
 
 model Room {
@@ -99,11 +99,11 @@ model Room {
   company     Company?   @relation(fields: [companyId], references: [id])
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  TimeSlot    TimeSlot[]
+  timeSlot    TimeSlot[]
   duration    Int
   cleanUpTime Int
-  Booking     Booking[]
-  Game        Game[]
+  booking     Booking[]
+  game        Game[]
 }
 
 model TimeSlot {
@@ -132,10 +132,10 @@ model Booking {
   state     BookingState @default(SCHEDULED)
   companyId String?
   company   Company?     @relation(fields: [companyId], references: [id])
-  Game      Game[]
+  game      Game[]
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
-  TimeSlot  TimeSlot[]
+  timeSlot  TimeSlot[]
 }
 
 model Game {
@@ -148,7 +148,7 @@ model Game {
   updatedAt DateTime  @updatedAt
   room      Room      @relation(fields: [roomId], references: [id])
   players   Player[]
-  Booking   Booking?  @relation(fields: [bookingId], references: [id])
+  booking   Booking?  @relation(fields: [bookingId], references: [id])
   bookingId String?
 }
 
