@@ -28,6 +28,9 @@ export class TimeSlotService {
   async createTimeSlot(body: CreateEditTimeSlotDto, user: UserDto) {
     const room = await this.prisma.room.findUnique({
       where: { id: body.roomId },
+      include: {
+        company: true,
+      },
     });
 
     if (!room) {
@@ -68,7 +71,11 @@ export class TimeSlotService {
     const timeSlot = await this.prisma.timeSlot.findUnique({
       where: { id: timeSlotId },
       include: {
-        room: true,
+        room: {
+          include: {
+            company: true,
+          },
+        },
       },
     });
 
@@ -76,13 +83,7 @@ export class TimeSlotService {
       throw new NotFoundException('Time slot not found');
     }
 
-    if (user.role === Role.COMPANY) {
-      if (timeSlot.room.companyId !== user.company.id) {
-        throw new ForbiddenException(
-          'You are not allowed to update this time slot',
-        );
-      }
-    }
+    await this.hasAccessToTimeSlot(timeSlotId, user);
 
     const endTime = this.calculateEndTime(body.start, timeSlot.room.duration);
 
@@ -100,6 +101,29 @@ export class TimeSlotService {
         ...body,
         end: endTime,
       },
+    });
+  }
+
+  async deleteTimeSlot(timeSlotId: string, user: UserDto) {
+    const timeSlot = await this.prisma.timeSlot.findUnique({
+      where: { id: timeSlotId },
+      include: {
+        room: {
+          include: {
+            company: true,
+          },
+        },
+      },
+    });
+
+    if (!timeSlot) {
+      throw new NotFoundException('Time slot not found');
+    }
+
+    await this.hasAccessToTimeSlot(timeSlotId, user);
+
+    return this.prisma.timeSlot.delete({
+      where: { id: timeSlotId },
     });
   }
 
@@ -165,5 +189,30 @@ export class TimeSlotService {
     const endMinutes = totalMinutes % 60;
 
     return `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
+  }
+
+  private async hasAccessToTimeSlot(timeSlotId: string, user: UserDto) {
+    const timeSlot = await this.prisma.timeSlot.findUnique({
+      where: { id: timeSlotId },
+      include: {
+        room: {
+          include: {
+            company: true,
+          },
+        },
+      },
+    });
+
+    if (!timeSlot) {
+      throw new NotFoundException('Time slot not found');
+    }
+
+    if (user.role === Role.COMPANY) {
+      if (timeSlot.room.company?.id !== user.company.id) {
+        throw new ForbiddenException(
+          'You are not allowed to update this time slot',
+        );
+      }
+    }
   }
 }

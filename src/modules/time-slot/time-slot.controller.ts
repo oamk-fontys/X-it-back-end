@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+} from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { IsAuthenticated } from 'src/core/auth/auth.decorator';
@@ -39,5 +48,14 @@ export class TimeSlotController {
     @Req() req: RequestWithUser,
   ) {
     return this.timeSlotService.updateTimeSlot(timeSlotId, body, req.user);
+  }
+
+  @Delete(':timeSlotId')
+  @IsAuthenticated([Role.COMPANY, Role.ADMIN])
+  async deleteTimeSlot(
+    @Param('timeSlotId') timeSlotId: string,
+    @Req() req: RequestWithUser,
+  ) {
+    return this.timeSlotService.deleteTimeSlot(timeSlotId, req.user);
   }
 }
