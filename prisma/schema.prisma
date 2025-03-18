@@ -19,11 +19,22 @@ enum Role {
   COMPANY
 }
 
+enum WeekDay {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
 enum BookingState {
   SCHEDULED
   IN_PROGRESS
   DONE
   CANCELLED
+  BLOCKED
 }
 
 model User {
@@ -39,11 +50,11 @@ model User {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   pets        Pet[]
-  Company     Company?  @relation(fields: [companyId], references: [id])
+  company     Company?  @relation(fields: [companyId], references: [id])
   companyId   String?
   accessCode  String?   @unique
-  Booking     Booking[]
-  Player      Player[]
+  booking     Booking[]
+  player      Player[]
 }
 
 // THIS IS NOT PART OF THE APPLICATION JUST AN EXAMPLE TO SHOW MODULES
@@ -75,21 +86,41 @@ model Company {
   verified    Boolean
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  Room        Room[]
-  User        User[]
-  Booking     Booking[]
+  room        Room[]
+  user        User[]
+  booking     Booking[]
 }
 
 model Room {
-  id          String    @id @default(uuid())
+  id          String     @id @default(uuid())
   name        String
   description String
   companyId   String
-  company     Company?  @relation(fields: [companyId], references: [id])
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  Booking     Booking[]
-  Game        Game[]
+  company     Company?   @relation(fields: [companyId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  timeSlot    TimeSlot[]
+  duration    Int
+  cleanUpTime Int
+  booking     Booking[]
+  game        Game[]
+}
+
+model TimeSlot {
+  id        String   @id @default(uuid())
+  start     String
+  end       String
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id])
+  day       WeekDay
+  bookingId String?
+  booking   Booking? @relation(fields: [bookingId], references: [id])
+}
+
+enum TimeSlotStatus {
+  BOOKED
+  AVAILABLE
+  CANCELLED
 }
 
 model Booking {
@@ -101,9 +132,10 @@ model Booking {
   state     BookingState @default(SCHEDULED)
   companyId String?
   company   Company?     @relation(fields: [companyId], references: [id])
-  Game      Game[]
+  game      Game[]
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
+  timeSlot  TimeSlot[]
 }
 
 model Game {
@@ -116,7 +148,7 @@ model Game {
   updatedAt DateTime  @updatedAt
   room      Room      @relation(fields: [roomId], references: [id])
   players   Player[]
-  Booking   Booking?  @relation(fields: [bookingId], references: [id])
+  booking   Booking?  @relation(fields: [bookingId], references: [id])
   bookingId String?
 }
 
