@@ -6,5 +6,6 @@ import { PrismaService } from "src/core/database/prisma.service";
 @Module({
     controllers: [RoomController],
     providers: [RoomService, PrismaService],
+    exports: [RoomService]
 })
 export class RoomModule { }
