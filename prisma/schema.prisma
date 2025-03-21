@@ -107,14 +107,13 @@ model Room {
 }
 
 model TimeSlot {
-  id        String   @id @default(uuid())
-  start     String
-  end       String
-  roomId    String
-  room      Room     @relation(fields: [roomId], references: [id])
-  day       WeekDay
-  bookingId String?
-  booking   Booking? @relation(fields: [bookingId], references: [id])
+  id      String    @id @default(uuid())
+  start   String
+  end     String
+  roomId  String
+  room    Room      @relation(fields: [roomId], references: [id])
+  day     WeekDay
+  booking Booking[]
 }
 
 enum TimeSlotStatus {
@@ -124,18 +123,19 @@ enum TimeSlotStatus {
 }
 
 model Booking {
-  id        String       @id @default(uuid())
-  userId    String
-  user      User         @relation(fields: [userId], references: [id])
-  roomId    String
-  room      Room         @relation(fields: [roomId], references: [id])
-  state     BookingState @default(SCHEDULED)
-  companyId String?
-  company   Company?     @relation(fields: [companyId], references: [id])
-  game      Game[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  timeSlot  TimeSlot[]
+  id         String       @id @default(uuid())
+  userId     String
+  user       User         @relation(fields: [userId], references: [id])
+  roomId     String
+  room       Room         @relation(fields: [roomId], references: [id])
+  state      BookingState @default(SCHEDULED)
+  companyId  String?
+  company    Company?     @relation(fields: [companyId], references: [id])
+  game       Game[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  timeSlot   TimeSlot     @relation(fields: [timeSlotId], references: [id])
+  timeSlotId String
 }
 
 model Game {
