@@ -63,6 +63,12 @@ export class BookingService {
                 throw new ForbiddenException('Timeslot is already booked');
             }
 
+
+            if (!timeslotIsAvailable) {
+                throw new ForbiddenException('Timeslot is already booked');
+            }
+
+
             const newBooking = await this.prisma.booking.create({
                 data: {
                     userId: userId,

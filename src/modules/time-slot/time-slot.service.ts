@@ -225,7 +225,7 @@ export class TimeSlotService {
       },
     });
 
-    if (booking) {
+    if (!booking) {
       return true;
     }
 
