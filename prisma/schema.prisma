@@ -136,6 +136,7 @@ model Booking {
   updatedAt  DateTime     @updatedAt
   timeSlot   TimeSlot     @relation(fields: [timeSlotId], references: [id])
   timeSlotId String
+  date       DateTime
 }
 
 model Game {
