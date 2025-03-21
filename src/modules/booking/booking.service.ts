@@ -16,8 +16,11 @@ export class BookingService {
             where: {
                 userId: userId
             },
-            include: {
-                room: true
+            select: {
+                roomId: true,
+                userId: true,
+                createdAt: true,
+                updatedAt: true
             }
         });
     }
