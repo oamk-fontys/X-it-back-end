@@ -3,18 +3,22 @@ import { hash } from 'bcrypt';
 import { RegisterDto } from 'src/core/auth/dto/register.dto';
 import { PrismaService } from 'src/core/database/prisma.service';
 import { CreateEditUserDto } from './dto/create-edit-user.dto';
+import { defaultUserSelect } from './select/user.select';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   public async getUsers() {
-    return this.prisma.user.findMany();
+    return this.prisma.user.findMany({
+      select: defaultUserSelect,
+    });
   }
 
   public async getUserById(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
+      select: defaultUserSelect,
     });
 
     if (!user) {
@@ -68,8 +72,9 @@ export class UserService {
   public async getUserByEmail(email: string) {
     return await this.prisma.user.findUnique({
       where: { email },
-      include: {
-        company: true,
+      select: {
+        ...defaultUserSelect,
+        password: true,
       },
     });
   }
@@ -77,6 +82,7 @@ export class UserService {
   public async getUserByAccessCode(accessCode: string) {
     return await this.prisma.user.findUnique({
       where: { accessCode },
+      select: defaultUserSelect,
     });
   }
 

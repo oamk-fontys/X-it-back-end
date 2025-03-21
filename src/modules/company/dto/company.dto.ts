@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
+import { FileDto } from 'src/modules/file/dto/file.dto';
 
 @Exclude()
 export class CompanyDto {
@@ -92,6 +93,13 @@ export class CompanyDto {
     type: Date,
   })
   createdAt: Date;
+
+  @Expose()
+  @ApiProperty({
+    description: 'logo of the company',
+    type: FileDto,
+  })
+  logo: FileDto;
 
   @Expose()
   @ApiProperty({

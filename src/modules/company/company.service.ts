@@ -1,19 +1,22 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaService } from "src/core/database/prisma.service";
-import { CreateEditCompanyDto } from "./dto/create-edit-company.dto";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from 'src/core/database/prisma.service';
+import { CreateEditCompanyDto } from './dto/create-edit-company.dto';
+import { defaultCompanySelect } from './select/company.select';
 
 @Injectable()
 export class CompanyService {
-
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   public async getCompanies() {
-    return await this.prisma.company.findMany();
+    return await this.prisma.company.findMany({
+      select: defaultCompanySelect,
+    });
   }
 
   public async getCompanyById(id: string) {
     const company = await this.prisma.company.findUnique({
       where: { id },
+      select: defaultCompanySelect,
     });
 
     if (!company) {
@@ -35,14 +38,14 @@ export class CompanyService {
     }
     const newCompany = await this.prisma.company.create({
       data: {
-        ...body
+        ...body,
       },
     });
 
     return newCompany;
   }
 
-  public async updateCompany(id: string, body: CreateEditCompanyDto) {
+  public async updateCompany(id: string, body: Partial<CreateEditCompanyDto>) {
     if (body.ownerId) {
       const owner = await this.prisma.user.findUnique({
         where: { id: body.ownerId },
@@ -63,7 +66,7 @@ export class CompanyService {
     return await this.prisma.company.update({
       where: { id },
       data: {
-        ...body
+        ...body,
       },
     });
   }
