@@ -5,11 +5,12 @@ import { IsAuthenticated } from "src/core/auth/auth.decorator";
 import { BookingState } from "@prisma/client";
 import { UserService } from "../user/user.service";
 import { RoomService } from "../room/room.service";
+import { TimeSlotService } from "../time-slot/time-slot.service";
 
 @Injectable()
 export class BookingService {
 
-    constructor(private readonly prisma: PrismaService, private readonly userService: UserService, private readonly roomService: RoomService) { }
+    constructor(private readonly prisma: PrismaService, private readonly userService: UserService, private readonly roomService: RoomService, private readonly timeSlotService: TimeSlotService) { }
 
     public async getAllBookingsByUserId(userId: string) {
         return await this.prisma.booking.findMany({
@@ -39,36 +40,43 @@ export class BookingService {
     }
 
     public async createBooking(body: CreateEditBookingDto, userId: string) {
-        if (body.userId !== userId) {
-            throw new ForbiddenException('User mismatch: You can only create bookings for yourself');
+        {
+            const roomId = body.roomId;
+
+            const user = await this.userService.getUserById(userId);
+            if (!user) {
+                throw new NotFoundException('User not found');
+            }
+
+            const roomExists = await this.roomService.doesRoomExist(roomId.toString());
+            if (!roomExists) {
+                throw new NotFoundException('Room not found');
+            }
+
+            const timeslotExists = await this.timeSlotService.getTimeSlots(body.timeslotId);
+            if (!timeslotExists) {
+                throw new NotFoundException('Timeslot not found');
+            }
+
+            const timeslotIsAvailable = await this.timeSlotService.isTimeSlotBooked(body.timeslotId, new Date(body.date));
+            if (!timeslotIsAvailable) {
+                throw new ForbiddenException('Timeslot is already booked');
+            }
+
+            const newBooking = await this.prisma.booking.create({
+                data: {
+                    userId: userId,
+                    roomId: roomId.toString(),
+                    state: BookingState.SCHEDULED,
+                    timeSlotId: body.timeslotId,
+                    date: body.date,
+                },
+            });
+
+            return newBooking;
         }
-        const roomId = body.roomId;
-
-        if (body.userId !== userId) {
-            throw new ForbiddenException('User mismatch: You can only create bookings for yourself');
-        }
-
-        const user = await this.userService.getUserById(userId);
-        const userExists = await this.userService.doesUserExist(user.email, user.username);
-        if (!userExists) {
-            throw new NotFoundException('User not found');
-        }
-
-        const roomExists = await this.roomService.doesRoomExist(roomId.toString());
-        if (!roomExists) {
-            throw new NotFoundException('Room not found');
-        }
-
-        const newBooking = await this.prisma.booking.create({
-            data: {
-                userId: userId,
-                roomId: roomId.toString(),
-                state: BookingState.SCHEDULED,
-            },
-        });
-
-        return newBooking;
     }
+
 
     public async updateBooking(id: string, body: CreateEditBookingDto, userId: string) {
         const user = await this.userService.getUserById(userId);
@@ -96,7 +104,7 @@ export class BookingService {
         return await this.prisma.booking.update({
             where: { id },
             data: {
-                userId: body.userId,
+                userId: userId,
                 roomId: body.roomId.toString(),
             },
         });

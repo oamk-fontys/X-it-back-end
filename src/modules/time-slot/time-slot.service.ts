@@ -9,9 +9,10 @@ import { PrismaService } from 'src/core/database/prisma.service';
 import { UserDto } from '../user/dto/user.dto';
 import { CreateEditTimeSlotDto } from './dto/create-edit-time-slot.dto';
 
+
 @Injectable()
 export class TimeSlotService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async getTimeSlots(roomId: string) {
     return await this.prisma.timeSlot.findMany({
@@ -214,5 +215,20 @@ export class TimeSlotService {
         );
       }
     }
+  }
+
+  public async isTimeSlotBooked(timeSlotId: string, date: Date): Promise<boolean> {
+    const booking = await this.prisma.booking.findFirst({
+      where: {
+        timeSlotId,
+        date: date.toISOString(),
+      },
+    });
+
+    if (booking) {
+      return true;
+    }
+
+    return false;
   }
 }
