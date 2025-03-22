@@ -112,12 +112,53 @@ async function main() {
     }),
   );
 
+  // Create one game for each room
+  const games = await Promise.all(
+    rooms.flat().map(async (room) => {
+      return await prisma.game.create({
+        data: {
+          teamName: faker.color.human(),
+          roomId: room.id,
+          startTime: faker.date.recent(),
+          endTime: faker.date.future(),
+          //bookingId : booking.id
+        },
+      });
+    }),
+  );
+
+  // Create 5 players for each game
+  const players = await Promise.all(
+    games.flatMap(async (game) => {
+      return Promise.all(
+        Array(5)
+          .fill(null)
+          .map(async () => {
+            const randomUser =
+              Math.random() > 0.5 ? regularUsers[Math.floor(Math.random() * regularUsers.length)] : null; // Assign user or make guest
+
+            return await prisma.player.create({
+              data: {
+                gameId: game.id,
+                userId: randomUser?.id || null,
+                isGuest: randomUser ? false : true, // If user is null, mark as guest
+                isAdult: faker.datatype.boolean(),
+              },
+            });
+          }),
+      );
+    }),
+  );
+  
+
   console.log({
     companiesCount: companies.length,
     adminUsersCount: adminUsers.length,
     regularUsersCount: regularUsers.length,
     companyUsersCount: companyUsers.length,
     roomsCount: rooms.flat().length,
+    gamesCount: games.flat().length,
+    playersCount: players.flat().length,
   });
 }
 
