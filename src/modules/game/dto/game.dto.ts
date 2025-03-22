@@ -53,13 +53,12 @@ export class GameDto {
   endTime?: string;
 
   @Expose()
-  @IsOptional()
   @IsString()
   @ApiProperty({
     description: 'The ID of the booking associated with this game',
     example: '617949f8-0c4e-4bb8-b13b-c24fd5175f3b',
-    required: false,
+    required: true,
   })
-  bookingId?: string;
+  bookingId: string;
 
 }
