@@ -196,80 +196,43 @@ async function main() {
         });
       }),
   );
-
-  // Create games for each booking
-  const games = await Promise.all(
-    bookings.map(async (booking) => {
-      return await prisma.game.create({
-        data: {
-          teamName: faker.company.name(),
-          roomId: booking.roomId,
-          bookingId: booking.id,
-          startTime: faker.date.future(),
-          endTime: faker.date.future(),
-        },
-      });
-    }),
-  );
-
-  // Create players for each game
-  const players = await Promise.all(
-    games.flatMap(async (game) => {
-      // Create 4-6 players per game
-      const numberOfPlayers = faker.number.int({ min: 4, max: 6 });
-      return Promise.all(
-        Array(numberOfPlayers)
-          .fill(null)
-          .map(async () => {
-            const isGuest = faker.datatype.boolean();
-            return await prisma.player.create({
-              data: {
-                gameId: game.id,
-                isGuest,
-                isAdult: faker.datatype.boolean(),
-                userId: isGuest
-                  ? null
-                  : regularUsers[
-                    Math.floor(Math.random() * regularUsers.length)
-                  ].id,
-              },
-            });
-          }),
-      );
-    }),
-  );
   /*
-    // Create one game for each room
+    // Create games for each booking
     const games = await Promise.all(
-      rooms.flat().map(async (room) => {
+      bookings.map(async (booking) => {
         return await prisma.game.create({
           data: {
-            teamName: faker.color.human(),
-            roomId: room.id,
-            startTime: faker.date.recent(),
+            teamName: faker.company.name(),
+            roomId: booking.roomId,
+            bookingId: booking.id,
+            startTime: faker.date.future(),
             endTime: faker.date.future(),
-            bookingId : booking.id
           },
         });
       }),
     );
-  
-    // Create 5 players for each game
+    */
+  /*
+    // Create players for each game
     const players = await Promise.all(
       games.flatMap(async (game) => {
+        // Create 4-6 players per game
+        const numberOfPlayers = faker.number.int({ min: 4, max: 6 });
         return Promise.all(
-          Array(5)
+          Array(numberOfPlayers)
             .fill(null)
             .map(async () => {
-              const randomUser =
-                Math.random() > 0.5 ? regularUsers[Math.floor(Math.random() * regularUsers.length)] : null; // Assign user or make guest
-  
+              const isGuest = faker.datatype.boolean();
               return await prisma.player.create({
                 data: {
                   gameId: game.id,
-                  userId: randomUser?.id || null,
-                  isGuest: randomUser ? false : true, // If user is null, mark as guest
+                  isGuest,
                   isAdult: faker.datatype.boolean(),
+                  userId: isGuest
+                    ? null
+                    : regularUsers[
+                      Math.floor(Math.random() * regularUsers.length)
+                    ].id,
                 },
               });
             }),
@@ -277,7 +240,6 @@ async function main() {
       }),
     );
     */
-
 
   console.log({
     companiesCount: companies.length,

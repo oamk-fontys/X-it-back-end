@@ -3,10 +3,15 @@ import { PrismaService } from '../../core/database/prisma.service';
 import { UserDto } from '../user/dto/user.dto';
 import { CreateEditGameDto } from './dto/create-edit-game.dto';
 import { Role } from '@prisma/client';
+import { BookingService } from '../booking/booking.service';
+import { RoomService } from '../room/room.service';
 
 @Injectable()
 export class GameService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService,
+    private readonly bookingService: BookingService,
+    private readonly roomService: RoomService,
+  ) { }
 
   // Get all games
   public async getGames() {
@@ -29,17 +34,14 @@ export class GameService {
   // Create a new game
   public async createGame(body: CreateEditGameDto, user: UserDto) {
 
-    const booking = await this.prisma.game.findUnique({
-      where: { id: body.bookingId },
-    });
+    const booking = await this.bookingService.getBookingById(body.bookingId);
+    console.log('Booking retrieved:', booking);
 
     if (!booking) {
       throw new NotFoundException('Booking not found');
     }
 
-    const room = await this.prisma.room.findUnique({
-      where: { id: body.roomId },
-    });
+    const room = await this.roomService.getRoomById(body.roomId);
 
     if (!room) {
       throw new NotFoundException('Room not found');

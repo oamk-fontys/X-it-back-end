@@ -3,10 +3,13 @@ import { PrismaService } from '../../core/database/prisma.service';
 import { CreateEditPlayerDto } from './dto/create-edit-player.dto';
 import { Player, Role } from '@prisma/client';
 import { UserDto } from '../user/dto/user.dto';
+import { GameService } from '../game/game.service';
 
 @Injectable()
 export class PlayerService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService,
+    private readonly gameService: GameService,
+  ) { }
 
   // Get all players in a specific game
   public async getPlayersByGame(gameId: string): Promise<Player[]> {

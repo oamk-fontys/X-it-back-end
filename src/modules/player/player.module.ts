@@ -3,10 +3,14 @@ import { Module } from '@nestjs/common';
 import { PlayerService } from './player.service';
 import { PlayerController } from './player.controller';
 import { PrismaService } from '../../core/database/prisma.service';
+import { GameService } from '../game/game.service';
+import { RoomService } from '../room/room.service';
+import { UserService } from '../user/user.service';
+import { BookingService } from '../booking/booking.service';
 
 @Module({
-  controllers: [PlayerController], // Registers the controller
-  providers: [PlayerService, PrismaService], // Registers services
-  exports: [PlayerService], // Makes PlayerService available for other modules if needed
+  controllers: [PlayerController],
+  providers: [PlayerService, PrismaService, GameService, UserService, RoomService, BookingService],
+  exports: [PlayerService],
 })
-export class PlayerModule {}
+export class PlayerModule { }
