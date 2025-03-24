@@ -1,14 +1,13 @@
 import {
-  ForbiddenException,
   Injectable,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
-import { BookingState } from '@prisma/client';
-import { IsAuthenticated } from 'src/core/auth/auth.decorator';
 import { PrismaService } from 'src/core/database/prisma.service';
-import { RoomService } from '../room/room.service';
-import { UserService } from '../user/user.service';
 import { CreateEditBookingDto } from './dto/create-edit-booking.dto';
+import { BookingState } from '@prisma/client';
+import { UserService } from '../user/user.service';
+import { RoomService } from '../room/room.service';
 
 @Injectable()
 export class BookingService {
@@ -29,7 +28,6 @@ export class BookingService {
     });
   }
 
-  @IsAuthenticated()
   public async getSingleBookingByUserId(userId: string, id: string) {
     const booking = await this.prisma.booking.findFirst({
       where: {
@@ -51,7 +49,6 @@ export class BookingService {
         'User mismatch: You can only create bookings for yourself',
       );
     }
-    const roomId = body.roomId;
 
     if (body.userId !== userId) {
       throw new ForbiddenException(
@@ -64,11 +61,13 @@ export class BookingService {
       user.email,
       user.username,
     );
+
     if (!userExists) {
       throw new NotFoundException('User not found');
     }
 
-    const roomExists = await this.roomService.doesRoomExist(roomId.toString());
+    const roomExists = await this.roomService.doesRoomExist(body.roomId);
+
     if (!roomExists) {
       throw new NotFoundException('Room not found');
     }
@@ -76,9 +75,9 @@ export class BookingService {
     const newBooking = await this.prisma.booking.create({
       data: {
         userId: userId,
-        roomId: roomId.toString(),
+        roomId: body.roomId,
         state: BookingState.SCHEDULED,
-        timeSlotId: '12',
+        timeSlotId: body.timeSlotId,
       },
     });
 
