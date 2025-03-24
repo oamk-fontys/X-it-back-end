@@ -35,7 +35,6 @@ export class PlayerService {
     return player;
   }
 
-  // Add/Create a new player in a game
   public async createPlayer(body: CreateEditPlayerDto, user: UserDto): Promise<Player> {
     const game = await this.prisma.game.findUnique({
       where: { id: body.gameId },
@@ -58,12 +57,13 @@ export class PlayerService {
       }
     }
 
+    let playerUser;
     if (body.userId) {
-      const user = await this.prisma.user.findUnique({
+      playerUser = await this.prisma.user.findUnique({
         where: { id: body.userId },
       });
 
-      if (!user) {
+      if (!playerUser) {
         throw new NotFoundException('User not found');
       }
     }
@@ -74,6 +74,9 @@ export class PlayerService {
         userId: body.userId || null,
         isGuest: body.isGuest,
         isAdult: body.isAdult,
+      },
+      include: {
+        user: true,
       },
     });
 

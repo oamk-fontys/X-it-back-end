@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude, Expose } from "class-transformer";
 import { IsBoolean, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { UserDto } from "src/modules/user/dto/user.dto";
 
 @Exclude()
 export class CreateEditPlayerDto {
@@ -45,4 +46,13 @@ export class CreateEditPlayerDto {
         type: Boolean,
     })
     isAdult: boolean;
+
+    @Expose()
+    @ApiProperty({
+        description: 'User data associated with the player if available',
+        type: UserDto,
+        required: false,
+    })
+    @IsOptional()
+    user?: UserDto;
 }
