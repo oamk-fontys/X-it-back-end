@@ -67,7 +67,13 @@ export class AuthService {
       throw new UnauthorizedException('Invalid access code');
     }
 
-    if (user.companyId !== body.companyId) {
+    if (!user.company) {
+      throw new UnauthorizedException(
+        'You are not authorized to access this company',
+      );
+    }
+
+    if (user.company.id !== body.companyId) {
       throw new UnauthorizedException(
         'You are not authorized to access this company',
       );
