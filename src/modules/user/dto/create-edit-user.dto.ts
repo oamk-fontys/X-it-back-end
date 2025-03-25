@@ -1,7 +1,13 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Exclude, Expose } from "class-transformer";
-import { IsEmail, IsString, IsDate, IsEnum, IsPhoneNumber } from "class-validator";
-import { Role } from "@prisma/client";
+import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
+import { Exclude, Expose } from 'class-transformer';
+import {
+  IsDate,
+  IsEmail,
+  IsEnum,
+  IsPhoneNumber,
+  IsString,
+} from 'class-validator';
 
 @Exclude()
 export class CreateEditUserDto {
@@ -69,4 +75,12 @@ export class CreateEditUserDto {
   })
   @IsEnum(Role)
   role: Role;
+
+  @Expose()
+  @ApiProperty({
+    description: 'The file id of the user profile picture',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    type: String,
+  })
+  profilePictureId: string;
 }
