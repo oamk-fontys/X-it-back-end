@@ -21,7 +21,7 @@ export class TimeSlotController {
   constructor(private readonly timeSlotService: TimeSlotService) {}
 
   @Get(':roomId')
-  @IsAuthenticated([Role.COMPANY, Role.ADMIN])
+  @IsAuthenticated()
   @ApiOkResponse({
     description: 'The time slots for the room',
     type: TimeSlotDto,
