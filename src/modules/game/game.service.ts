@@ -2,7 +2,7 @@ import { ConflictException, ForbiddenException, Injectable, NotFoundException } 
 import { PrismaService } from '../../core/database/prisma.service';
 import { UserDto } from '../user/dto/user.dto';
 import { CreateEditGameDto } from './dto/create-edit-game.dto';
-import { Role } from '@prisma/client';
+import { BookingState, Role } from '@prisma/client';
 import { BookingService } from '../booking/booking.service';
 import { RoomService } from '../room/room.service';
 
@@ -39,6 +39,10 @@ export class GameService {
 
     if (!booking) {
       throw new NotFoundException('Booking not found');
+    }
+
+    if (booking.state !== BookingState.SCHEDULED) {
+      throw new ConflictException('Game can only be created for scheduled bookings');
     }
 
     const room = await this.roomService.getRoomById(body.roomId);
