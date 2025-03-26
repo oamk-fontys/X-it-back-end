@@ -17,7 +17,7 @@ export class BookingService {
     private readonly userService: UserService,
     private readonly roomService: RoomService,
     private readonly timeSlotService: TimeSlotService,
-  ) {}
+  ) { }
 
   public async getAllBookingsByUserId(userId: string) {
     return await this.prisma.booking.findMany({
@@ -36,6 +36,9 @@ export class BookingService {
         id: id,
         userId: userId,
       },
+      include: {
+        room: true,
+      },
     });
 
     if (!booking) {
@@ -44,6 +47,7 @@ export class BookingService {
 
     return booking;
   }
+
 
   public async createBooking(body: CreateEditBookingDto, userId: string) {
     {
