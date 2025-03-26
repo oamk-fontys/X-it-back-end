@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Exclude, Expose } from "class-transformer";
 import { IsNotEmpty } from "class-validator";
 import { RoomDto } from "src/modules/room/dto/room.dto";
+import { MinimalUserDto } from "src/modules/user/dto/minimal-user.dto";
 import { UserDto } from "src/modules/user/dto/user.dto";
 
 @Exclude()
@@ -19,9 +20,9 @@ export class BookingDto {
     @IsNotEmpty()
     @ApiProperty({
         description: 'The user',
-        type: UserDto,
+        type: MinimalUserDto,
     })
-    user: UserDto;
+    user: MinimalUserDto;
 
     @Expose()
     @IsNotEmpty()
