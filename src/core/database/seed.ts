@@ -192,6 +192,7 @@ async function main() {
             state: 'SCHEDULED',
             companyId: randomRoom.companyId,
             timeSlotId: randomTimeSlot.id,
+            date: faker.date.future(),
           },
         });
       }),

@@ -6,7 +6,7 @@ import { AuthGuard } from './auth.guard';
 export const ROLES_KEY = 'roles';
 export const Roles = (...roles: Role[]) => SetMetadata(ROLES_KEY, roles);
 
-export function IsAuthenticated(roles: Role | Role[] = Role.USER) {
+export function IsAuthenticated(roles: Role | Role[] = []) {
   const roleArray = Array.isArray(roles) ? roles : [roles];
   return applyDecorators(
     Roles(...roleArray),

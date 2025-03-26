@@ -7,5 +7,6 @@ import { TimeSlotService } from './time-slot.service';
   imports: [],
   controllers: [TimeSlotController],
   providers: [TimeSlotService, PrismaService],
+  exports: [TimeSlotService],
 })
-export class TimeSlotModule {}
+export class TimeSlotModule { }
