@@ -23,6 +23,14 @@ export class CreateEditBookingDto {
 
   @Expose()
   @ApiProperty({
+    description: 'This is the companyId',
+    example: 'ef2e8234-d7b5-4946-8cb9-0e5c85dc382c',
+    type: String,
+  })
+  companyId: string;
+
+  @Expose()
+  @ApiProperty({
     description: 'The booking date',
     example: '2022-12-01T06:56:54.240Z',
     type: Date,

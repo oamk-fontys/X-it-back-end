@@ -70,45 +70,49 @@ export class BookingService {
 
 
   public async createBooking(body: CreateEditBookingDto, userId: string) {
-    {
-      const roomExists = await this.roomService.doesRoomExist(body.roomId);
 
-      if (!roomExists) {
-        throw new NotFoundException('Room not found');
-      }
+    const roomExists = await this.roomService.doesRoomExist(body.roomId);
+    if (!roomExists) {
+      throw new NotFoundException('Room not found');
+    }
 
-      const timeslotExists = await this.timeSlotService.getTimeSlots(
-        body.timeslotId,
-      );
-      if (!timeslotExists) {
-        throw new NotFoundException('Timeslot not found');
-      }
+    const timeslotExists = await this.timeSlotService.getTimeSlots(body.timeslotId);
+    if (!timeslotExists) {
+      throw new NotFoundException('Timeslot not found');
+    }
 
-      const timeslotIsAvailable = await this.timeSlotService.isTimeSlotBooked(
-        body.timeslotId,
-        new Date(body.date),
-      );
-      if (!timeslotIsAvailable) {
-        throw new ForbiddenException('Timeslot is already booked');
-      }
+    const timeslotIsAvailable = await this.timeSlotService.isTimeSlotBooked(
+      body.timeslotId,
+      new Date(body.date),
+    );
+    if (!timeslotIsAvailable) {
+      throw new ForbiddenException('Timeslot is already booked');
+    }
 
-      if (!timeslotIsAvailable) {
-        throw new ForbiddenException('Timeslot is already booked');
-      }
-
-      const newBooking = await this.prisma.booking.create({
-        data: {
-          userId: userId,
-          roomId: body.roomId,
-          state: BookingState.SCHEDULED,
-          timeSlotId: body.timeslotId,
-          date: body.date,
-        },
+    if (body.companyId) {
+      const companyExists = await this.prisma.company.findUnique({
+        where: { id: body.companyId },
       });
 
-      return newBooking;
+      if (!companyExists) {
+        throw new NotFoundException('Company not found');
+      }
     }
+
+    const newBooking = await this.prisma.booking.create({
+      data: {
+        userId: userId,
+        roomId: body.roomId,
+        state: BookingState.SCHEDULED,
+        timeSlotId: body.timeslotId,
+        date: body.date,
+        companyId: body.companyId,
+      },
+    });
+
+    return newBooking;
   }
+
 
   public async updateBooking(
     id: string,
