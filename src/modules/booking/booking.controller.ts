@@ -8,7 +8,7 @@ import { ApiOkResponse } from '@nestjs/swagger';
 
 @Controller('booking')
 export class BookingController {
-  constructor(private readonly bookingService: BookingService) {}
+  constructor(private readonly bookingService: BookingService) { }
 
   @Get()
   @ApiOkResponse({
@@ -70,4 +70,16 @@ export class BookingController {
   async deleteBooking(@Param('id') id: string) {
     return this.bookingService.cancelBooking(id);
   }
+
+  @Get('/company/:companyId')
+  @ApiOkResponse({
+    description: 'Get all bookings by company ID',
+    type: BookingDto,
+    isArray: true,
+  })
+  @IsAuthenticated()
+  async getAllBookingsByCompanyId(@Param('companyId') companyId: string) {
+    return this.bookingService.getAllBookingsByCompanyId(companyId);
+  }
+
 }

@@ -154,4 +154,26 @@ export class BookingService {
       },
     });
   }
+
+  public async getAllBookingsByCompanyId(companyId: string) {
+    const bookings = await this.prisma.booking.findMany({
+      where: {
+        companyId: companyId,
+      },
+      include: {
+        room: true,
+        user: true,
+      },
+    });
+
+    return bookings.map((booking) => {
+      const minimalUser = plainToInstance(MinimalUserDto, booking.user, {
+        excludeExtraneousValues: true,
+      });
+      return {
+        ...booking,
+        user: minimalUser,
+      };
+    });
+  }
 }
