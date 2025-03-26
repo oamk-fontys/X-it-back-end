@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private reflector: Reflector,
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Get required roles from decorator metadata
@@ -41,7 +41,7 @@ export class AuthGuard implements CanActivate {
       request['user'] = payload;
 
       // Check if user has required role
-      if (requiredRoles && !requiredRoles.includes(payload.role)) {
+      if (requiredRoles.length !== 0 && !requiredRoles.includes(payload.role)) {
         throw new ForbiddenException('Insufficient permissions');
       }
     } catch (error) {

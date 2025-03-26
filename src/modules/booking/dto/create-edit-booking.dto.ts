@@ -14,20 +14,18 @@ export class CreateEditBookingDto {
   roomId: string;
 
   @Expose()
-  @IsNotEmpty()
   @ApiProperty({
-    description: 'The user',
-    example: '76dcdb77-5522-4deb-b8ba-8bc4b16892a3',
+    description: 'This is the timeslotId',
+    example: '534c2bd4-9ee9-43eb-9488-369fc7ba42fe',
     type: String,
   })
-  userId: string;
+  timeslotId: string;
 
   @Expose()
-  @IsNotEmpty()
   @ApiProperty({
-    description: 'The timeSlotId',
-    example: '123',
-    type: String,
+    description: 'The booking date',
+    example: '2022-12-01T06:56:54.240Z',
+    type: Date,
   })
-  timeSlotId: string;
+  date: Date;
 }
