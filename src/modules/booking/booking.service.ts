@@ -9,24 +9,36 @@ import { RoomService } from '../room/room.service';
 import { TimeSlotService } from '../time-slot/time-slot.service';
 import { UserService } from '../user/user.service';
 import { CreateEditBookingDto } from './dto/create-edit-booking.dto';
+import { MinimalUserDto } from '../user/dto/minimal-user.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class BookingService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly userService: UserService,
     private readonly roomService: RoomService,
     private readonly timeSlotService: TimeSlotService,
   ) { }
 
   public async getAllBookingsByUserId(userId: string) {
-    return await this.prisma.booking.findMany({
+    const bookings = await this.prisma.booking.findMany({
       where: {
         userId: userId,
       },
       include: {
         room: true,
+        user: true,
       },
+    });
+
+    return bookings.map((booking) => {
+      const minimalUser = plainToInstance(MinimalUserDto, booking.user, {
+        excludeExtraneousValues: true,
+      });
+      return {
+        ...booking,
+        user: minimalUser,
+      };
     });
   }
 
@@ -38,6 +50,7 @@ export class BookingService {
       },
       include: {
         room: true,
+        user: true,
       },
     });
 
@@ -45,7 +58,14 @@ export class BookingService {
       throw new NotFoundException('Booking not found');
     }
 
-    return booking;
+    const minimalUser = plainToInstance(MinimalUserDto, booking.user, {
+      excludeExtraneousValues: true,
+    });
+
+    return {
+      ...booking,
+      user: minimalUser,
+    };
   }
 
 
