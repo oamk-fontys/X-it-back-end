@@ -218,7 +218,11 @@ export class TimeSlotService {
   }
 
   public async isTimeSlotBooked(timeSlotId: string, date: Date): Promise<boolean> {
+    console.log('Start checking time slot:', { timeSlotId, date });
+
     return await this.prisma.$transaction(async (prisma) => {
+      console.log('Starting transaction...');
+
       const existingBooking = await prisma.booking.findFirst({
         where: {
           timeSlotId,
@@ -226,21 +230,30 @@ export class TimeSlotService {
         },
       });
 
+      console.log('Existing booking check:', existingBooking);
+
       if (existingBooking) {
+        console.log('Time slot is already booked.');
         return false;
       }
 
-      await prisma.booking.create({
+      const userId = 'someUserId'; // Dynamisch ophalen of hardcoded waarde
+      console.log('Using user ID:', userId);
+
+      const newBooking = await prisma.booking.create({
         data: {
           timeSlotId,
           date: date.toISOString(),
-          userId: 'someUserId',
+          userId: userId,
           roomId: 'someRoomId',
         },
       });
 
+      console.log('New booking created:', newBooking);
+
       return true;
     });
   }
+
 
 }
