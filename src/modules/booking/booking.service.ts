@@ -101,11 +101,12 @@ export class BookingService {
         userId,
         roomId: body.roomId,
         timeSlotId: body.timeslotId,
-        date: new Date(body.date).toISOString(),
+        date: this.timeSlotService.roundDateToMinutes(new Date(body.date)), // Gebruik de afgeronde tijd
         companyId: body.companyId || null,
         state: BookingState.SCHEDULED,
       },
     });
+
 
     return newBooking;
   }

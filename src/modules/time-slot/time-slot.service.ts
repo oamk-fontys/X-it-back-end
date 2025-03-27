@@ -217,10 +217,10 @@ export class TimeSlotService {
     }
   }
 
-  // Helperfunctie om de datum naar minuten af te ronden
-  private roundDateToMinutes(date: Date): string {
+
+  public roundDateToMinutes(date: Date): string {
     const rounded = new Date(date.getTime());
-    rounded.setSeconds(0, 0); // Zet seconden en milliseconden op 0
+    rounded.setSeconds(0, 0);
     return rounded.toISOString();
   }
 
