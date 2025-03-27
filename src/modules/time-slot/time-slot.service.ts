@@ -229,22 +229,20 @@ export class TimeSlotService {
       throw new Error('User ID is required to book a time slot.');
     }
 
-    // Controleer of de opgegeven userId bestaat in de database
+    // Controleer of de gebruiker bestaat
     const userExists = await this.prisma.user.findUnique({
       where: { id: userId },
     });
-
     if (!userExists) {
       console.error(`User ID '${userId}' does not exist.`);
       throw new Error('Invalid User ID: The user does not exist.');
     }
-
     console.log('Valid user found:', userId);
 
     return await this.prisma.$transaction(async (prisma) => {
       console.log('Starting transaction...');
 
-      // Controleer of het tijdslot al geboekt is
+      // Controleer op bestaande boekingen
       const existingBooking = await prisma.booking.findFirst({
         where: {
           timeSlotId,
@@ -252,25 +250,24 @@ export class TimeSlotService {
         },
       });
 
-      console.log('Existing booking check:', existingBooking);
-
       if (existingBooking) {
-        console.log(`Time slot '${timeSlotId}' on '${date}' is already booked.`);
-        return false;
+        console.log(`Time slot '${timeSlotId}' is already booked.`);
+        return true; // Tijdslot is al geboekt, beschouw als succesvol
       }
 
-      // Boek het tijdslot
+      // Nieuwe boeking maken
       const newBooking = await prisma.booking.create({
         data: {
           timeSlotId,
           date: date.toISOString(),
           userId: userId,
-          roomId: 'someRoomId', // Kan dynamisch worden gemaakt
+          roomId: 'someRoomId', // Dynamische waarde
         },
       });
 
       console.log('New booking created successfully:', newBooking);
       return true;
-    });
+    }, { isolationLevel: 'Serializable' });
   }
+
 }
