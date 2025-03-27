@@ -85,16 +85,16 @@ export class BookingService {
       throw new NotFoundException(`User not found for ID: ${userId}`);
     }
 
-    const roundedDate = this.timeSlotService.roundDateToMinutes(new Date(body.date)); // Datum afronden
+    const roundedDate = this.timeSlotService.roundDateToMinutes(new Date(body.date));
 
     const existingBooking = await this.prisma.booking.findFirst({
       where: {
         timeSlotId: body.timeslotId,
-        date: roundedDate, // Controle met afgeronde tijd
+        date: roundedDate,
       },
     });
     if (existingBooking) {
-      throw new ForbiddenException(`Timeslot already booked: ${body.timeslotId}`);
+      throw new ForbiddenException(`Timeslot already booked`);
     }
 
     const newBooking = await this.prisma.booking.create({
@@ -102,7 +102,7 @@ export class BookingService {
         userId,
         roomId: body.roomId,
         timeSlotId: body.timeslotId,
-        date: roundedDate, // Gebruik de afgeronde tijd
+        date: roundedDate,
         companyId: body.companyId || null,
         state: BookingState.SCHEDULED,
       },

@@ -229,30 +229,21 @@ export class TimeSlotService {
     date: Date,
     userId: string
   ): Promise<boolean> {
-    console.log('Start checking time slot:', { timeSlotId, date, userId });
 
     if (!userId) {
-      console.error('No userId provided!');
       throw new Error('User ID is required to book a time slot.');
     }
 
-    // Controleer of de gebruiker bestaat
     const userExists = await this.prisma.user.findUnique({
       where: { id: userId },
     });
     if (!userExists) {
-      console.error(`User ID '${userId}' does not exist.`);
       throw new Error('Invalid User ID: The user does not exist.');
     }
-    console.log('Valid user found:', userId);
 
     return await this.prisma.$transaction(async (prisma) => {
-      console.log('Starting transaction...');
-
-      // Afronding van de ingevoerde datum
       const roundedDate = this.roundDateToMinutes(date);
 
-      // Controleer op bestaande boekingen
       const existingBooking = await prisma.booking.findFirst({
         where: {
           timeSlotId,
@@ -261,21 +252,17 @@ export class TimeSlotService {
       });
 
       if (existingBooking) {
-        console.log(`Time slot '${timeSlotId}' for rounded date '${roundedDate}' is already booked.`);
-        return true; // Tijdslot is al geboekt
+        return true;
       }
 
-      // Nieuwe boeking maken
       const newBooking = await prisma.booking.create({
         data: {
           timeSlotId,
-          date: roundedDate, // Gebruik de afgeronde datum
+          date: roundedDate,
           userId: userId,
-          roomId: 'someRoomId', // Dynamische waarde
+          roomId: 'someRoomId',
         },
       });
-
-      console.log('New booking created successfully:', newBooking);
       return true;
     });
   }
