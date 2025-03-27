@@ -218,53 +218,19 @@ export class TimeSlotService {
   }
 
 
-  public roundDateToMinutes(date: Date): string {
-    const rounded = new Date(date.getTime());
-    rounded.setSeconds(0, 0);
-    return rounded.toISOString();
-  }
-
-  public async isTimeSlotBooked(
-    timeSlotId: string,
-    date: Date,
-    userId: string
-  ): Promise<boolean> {
-
-    if (!userId) {
-      throw new Error('User ID is required to book a time slot.');
-    }
-
-    const userExists = await this.prisma.user.findUnique({
-      where: { id: userId },
+  public async isTimeSlotBooked(timeSlotId: string, date: Date): Promise<boolean> {
+    const booking = await this.prisma.booking.findFirst({
+      where: {
+        timeSlotId,
+        date: date.toISOString(),
+      },
     });
-    if (!userExists) {
-      throw new Error('Invalid User ID: The user does not exist.');
-    }
 
-    return await this.prisma.$transaction(async (prisma) => {
-      const roundedDate = this.roundDateToMinutes(date);
-
-      const existingBooking = await prisma.booking.findFirst({
-        where: {
-          timeSlotId,
-          date: roundedDate,
-        },
-      });
-
-      if (existingBooking) {
-        return true;
-      }
-
-      const newBooking = await prisma.booking.create({
-        data: {
-          timeSlotId,
-          date: roundedDate,
-          userId: userId,
-          roomId: 'someRoomId',
-        },
-      });
+    if (!booking) {
       return true;
-    });
+    }
+
+    return false;
   }
 
 
