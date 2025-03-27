@@ -71,6 +71,7 @@ export class BookingService {
 
 
   public async createBooking(body: CreateEditBookingDto, userId: string) {
+    console.log('Start booking creation:', { body, userId });
 
     const roomExists = await this.roomService.doesRoomExist(body.roomId);
     if (!roomExists) {
@@ -101,19 +102,27 @@ export class BookingService {
       }
     }
 
+    console.log('Preparing data for booking...');
+    const bookingData = {
+      userId: userId,
+      roomId: body.roomId,
+      state: BookingState.SCHEDULED,
+      timeSlotId: body.timeslotId,
+      date: new Date(body.date).toISOString(),
+      ...(body.companyId && { companyId: body.companyId }),
+    };
+
+    console.log('Booking data:', bookingData);
+
     const newBooking = await this.prisma.booking.create({
-      data: {
-        userId: userId,
-        roomId: body.roomId,
-        state: BookingState.SCHEDULED,
-        timeSlotId: body.timeslotId,
-        date: body.date,
-        companyId: body.companyId,
-      },
+      data: bookingData,
     });
+
+    console.log('Booking created successfully:', newBooking);
 
     return newBooking;
   }
+
 
 
   public async updateBooking(
