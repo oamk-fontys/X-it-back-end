@@ -71,7 +71,6 @@ export class BookingService {
 
 
   public async createBooking(body: CreateEditBookingDto, userId: string) {
-
     const roomExists = await this.prisma.room.findUnique({
       where: { id: body.roomId },
     });
@@ -86,10 +85,12 @@ export class BookingService {
       throw new NotFoundException(`User not found for ID: ${userId}`);
     }
 
+    const roundedDate = this.timeSlotService.roundDateToMinutes(new Date(body.date)); // Datum afronden
+
     const existingBooking = await this.prisma.booking.findFirst({
       where: {
         timeSlotId: body.timeslotId,
-        date: new Date(body.date).toISOString(),
+        date: roundedDate, // Controle met afgeronde tijd
       },
     });
     if (existingBooking) {
@@ -101,12 +102,11 @@ export class BookingService {
         userId,
         roomId: body.roomId,
         timeSlotId: body.timeslotId,
-        date: this.timeSlotService.roundDateToMinutes(new Date(body.date)), // Gebruik de afgeronde tijd
+        date: roundedDate, // Gebruik de afgeronde tijd
         companyId: body.companyId || null,
         state: BookingState.SCHEDULED,
       },
     });
-
 
     return newBooking;
   }
