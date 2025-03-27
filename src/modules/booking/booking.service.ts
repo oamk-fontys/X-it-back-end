@@ -11,6 +11,7 @@ import { UserService } from '../user/user.service';
 import { CreateEditBookingDto } from './dto/create-edit-booking.dto';
 import { MinimalUserDto } from '../user/dto/minimal-user.dto';
 import { plainToInstance } from 'class-transformer';
+import { ad } from '@faker-js/faker/dist/airline-BXaRegOM';
 
 @Injectable()
 export class BookingService {
@@ -180,4 +181,29 @@ export class BookingService {
       };
     });
   }
+
+  public async getAllBookingsForAdmins() {
+    const adminBookings = await this.prisma.booking.findMany({
+      where: {
+        user: {
+          role: 'ADMIN',
+        },
+      },
+      include: {
+        room: true,
+        user: true,
+      },
+    });
+
+    return adminBookings.map((booking) => {
+      const minimalUser = plainToInstance(MinimalUserDto, booking.user, {
+        excludeExtraneousValues: true,
+      });
+      return {
+        ...booking,
+        user: minimalUser,
+      };
+    });
+  }
+
 }
