@@ -73,16 +73,23 @@ export class BookingService {
   public async createBooking(body: CreateEditBookingDto, userId: string) {
     console.log('Start booking creation:', { body, userId });
 
-    const roomExists = await this.roomService.doesRoomExist(body.roomId);
+    // Controleer of de kamer bestaat
+    const roomExists = await this.prisma.room.findUnique({
+      where: { id: body.roomId },
+    });
     if (!roomExists) {
+      console.error(`Room not found for ID: ${body.roomId}`);
       throw new NotFoundException('Room not found');
     }
+    console.log('Room found:', roomExists);
 
+    // Controleer of de timeslot bestaat
     const timeslotExists = await this.timeSlotService.getTimeSlots(body.timeslotId);
     if (!timeslotExists) {
       throw new NotFoundException('Timeslot not found');
     }
 
+    // Controleer of het timeslot beschikbaar is
     const timeslotIsAvailable = await this.timeSlotService.isTimeSlotBooked(
       body.timeslotId,
       new Date(body.date),
@@ -91,37 +98,41 @@ export class BookingService {
     if (!timeslotIsAvailable) {
       throw new ForbiddenException('Timeslot is already booked');
     }
+    console.log('Timeslot is available.');
 
+    // Controleer of het bedrijf bestaat, indien opgegeven
     if (body.companyId) {
       const companyExists = await this.prisma.company.findUnique({
         where: { id: body.companyId },
       });
-
       if (!companyExists) {
         throw new NotFoundException('Company not found');
       }
+      console.log('Company exists:', companyExists);
     }
 
-    console.log('Preparing data for booking...');
-    const bookingData = {
-      userId: userId,
-      roomId: body.roomId,
-      state: BookingState.SCHEDULED,
-      timeSlotId: body.timeslotId,
-      date: new Date(body.date).toISOString(),
-      ...(body.companyId && { companyId: body.companyId }),
-    };
+    // Maak de boeking aan
+    try {
+      const newBooking = await this.prisma.booking.create({
+        data: {
+          userId: userId,
+          roomId: body.roomId,
+          state: BookingState.SCHEDULED,
+          timeSlotId: body.timeslotId,
+          date: new Date(body.date).toISOString(),
+          ...(body.companyId && { companyId: body.companyId }),
+        },
+      });
 
-    console.log('Booking data:', bookingData);
+      console.log('Booking created successfully:', newBooking);
 
-    const newBooking = await this.prisma.booking.create({
-      data: bookingData,
-    });
-
-    console.log('Booking created successfully:', newBooking);
-
-    return newBooking;
+      return newBooking;
+    } catch (error) {
+      console.error('Error creating booking:', error.message);
+      throw new Error('Booking failed due to an unknown error.');
+    }
   }
+
 
 
 
