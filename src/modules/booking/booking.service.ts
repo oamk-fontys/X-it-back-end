@@ -78,63 +78,46 @@ export class BookingService {
       where: { id: body.roomId },
     });
     if (!roomExists) {
-      console.error(`Room not found for ID: ${body.roomId}`);
-      throw new NotFoundException('Room not found');
+      throw new NotFoundException(`Room not found for ID: ${body.roomId}`);
     }
-    console.log('Room found:', roomExists);
+    console.log('Room validated:', roomExists);
 
-    // Controleer of de timeslot bestaat
-    const timeslotExists = await this.timeSlotService.getTimeSlots(body.timeslotId);
-    if (!timeslotExists) {
-      throw new NotFoundException('Timeslot not found');
+    // Controleer of de gebruiker bestaat
+    const userExists = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!userExists) {
+      throw new NotFoundException(`User not found for ID: ${userId}`);
     }
+    console.log('User validated:', userExists);
 
     // Controleer of het timeslot beschikbaar is
-    const timeslotIsAvailable = await this.timeSlotService.isTimeSlotBooked(
-      body.timeslotId,
-      new Date(body.date),
-      userId,
-    );
-    if (!timeslotIsAvailable) {
-      throw new ForbiddenException('Timeslot is already booked');
+    const existingBooking = await this.prisma.booking.findFirst({
+      where: {
+        timeSlotId: body.timeslotId,
+        date: new Date(body.date).toISOString(),
+      },
+    });
+    if (existingBooking) {
+      throw new ForbiddenException(`Timeslot already booked: ${body.timeslotId}`);
     }
     console.log('Timeslot is available.');
 
-    // Controleer of het bedrijf bestaat, indien opgegeven
-    if (body.companyId) {
-      const companyExists = await this.prisma.company.findUnique({
-        where: { id: body.companyId },
-      });
-      if (!companyExists) {
-        throw new NotFoundException('Company not found');
-      }
-      console.log('Company exists:', companyExists);
-    }
-
     // Maak de boeking aan
-    try {
-      const newBooking = await this.prisma.booking.create({
-        data: {
-          userId: userId,
-          roomId: body.roomId,
-          state: BookingState.SCHEDULED,
-          timeSlotId: body.timeslotId,
-          date: new Date(body.date).toISOString(),
-          ...(body.companyId && { companyId: body.companyId }),
-        },
-      });
+    const newBooking = await this.prisma.booking.create({
+      data: {
+        userId,
+        roomId: body.roomId,
+        timeSlotId: body.timeslotId,
+        date: new Date(body.date).toISOString(),
+        companyId: body.companyId || null,
+        state: BookingState.SCHEDULED,
+      },
+    });
 
-      console.log('Booking created successfully:', newBooking);
-
-      return newBooking;
-    } catch (error) {
-      console.error('Error creating booking:', error.message);
-      throw new Error('Booking failed due to an unknown error.');
-    }
+    console.log('Booking successfully created:', newBooking);
+    return newBooking;
   }
-
-
-
 
   public async updateBooking(
     id: string,
