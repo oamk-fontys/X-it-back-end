@@ -217,6 +217,13 @@ export class TimeSlotService {
     }
   }
 
+  // Helperfunctie om de datum naar minuten af te ronden
+  private roundDateToMinutes(date: Date): string {
+    const rounded = new Date(date.getTime());
+    rounded.setSeconds(0, 0); // Zet seconden en milliseconden op 0
+    return rounded.toISOString();
+  }
+
   public async isTimeSlotBooked(
     timeSlotId: string,
     date: Date,
@@ -242,24 +249,27 @@ export class TimeSlotService {
     return await this.prisma.$transaction(async (prisma) => {
       console.log('Starting transaction...');
 
+      // Afronding van de ingevoerde datum
+      const roundedDate = this.roundDateToMinutes(date);
+
       // Controleer op bestaande boekingen
       const existingBooking = await prisma.booking.findFirst({
         where: {
           timeSlotId,
-          date: date.toISOString(),
+          date: roundedDate,
         },
       });
 
       if (existingBooking) {
-        console.log(`Time slot '${timeSlotId}' is already booked.`);
-        return true; // Tijdslot is al geboekt, beschouw als succesvol
+        console.log(`Time slot '${timeSlotId}' for rounded date '${roundedDate}' is already booked.`);
+        return true; // Tijdslot is al geboekt
       }
 
       // Nieuwe boeking maken
       const newBooking = await prisma.booking.create({
         data: {
           timeSlotId,
-          date: date.toISOString(),
+          date: roundedDate, // Gebruik de afgeronde datum
           userId: userId,
           roomId: 'someRoomId', // Dynamische waarde
         },
@@ -267,7 +277,8 @@ export class TimeSlotService {
 
       console.log('New booking created successfully:', newBooking);
       return true;
-    }, { isolationLevel: 'Serializable' });
+    });
   }
+
 
 }
