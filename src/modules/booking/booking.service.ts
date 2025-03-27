@@ -71,27 +71,21 @@ export class BookingService {
 
 
   public async createBooking(body: CreateEditBookingDto, userId: string) {
-    console.log('Start booking creation:', { body, userId });
 
-    // Controleer of de kamer bestaat
     const roomExists = await this.prisma.room.findUnique({
       where: { id: body.roomId },
     });
     if (!roomExists) {
       throw new NotFoundException(`Room not found for ID: ${body.roomId}`);
     }
-    console.log('Room validated:', roomExists);
 
-    // Controleer of de gebruiker bestaat
     const userExists = await this.prisma.user.findUnique({
       where: { id: userId },
     });
     if (!userExists) {
       throw new NotFoundException(`User not found for ID: ${userId}`);
     }
-    console.log('User validated:', userExists);
 
-    // Controleer of het timeslot beschikbaar is
     const existingBooking = await this.prisma.booking.findFirst({
       where: {
         timeSlotId: body.timeslotId,
@@ -101,9 +95,7 @@ export class BookingService {
     if (existingBooking) {
       throw new ForbiddenException(`Timeslot already booked: ${body.timeslotId}`);
     }
-    console.log('Timeslot is available.');
 
-    // Maak de boeking aan
     const newBooking = await this.prisma.booking.create({
       data: {
         userId,
@@ -115,7 +107,6 @@ export class BookingService {
       },
     });
 
-    console.log('Booking successfully created:', newBooking);
     return newBooking;
   }
 
