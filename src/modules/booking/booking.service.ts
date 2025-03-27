@@ -71,44 +71,44 @@ export class BookingService {
 
 
   public async createBooking(body: CreateEditBookingDto, userId: string) {
-    const roomExists = await this.prisma.room.findUnique({
-      where: { id: body.roomId },
-    });
-    if (!roomExists) {
-      throw new NotFoundException(`Room not found for ID: ${body.roomId}`);
+    {
+      const roomExists = await this.roomService.doesRoomExist(body.roomId);
+
+      if (!roomExists) {
+        throw new NotFoundException('Room not found');
+      }
+
+      const timeslotExists = await this.timeSlotService.getTimeSlots(
+        body.timeslotId,
+      );
+      if (!timeslotExists) {
+        throw new NotFoundException('Timeslot not found');
+      }
+
+      const timeslotIsAvailable = await this.timeSlotService.isTimeSlotBooked(
+        body.timeslotId,
+        new Date(body.date),
+      );
+      if (!timeslotIsAvailable) {
+        throw new ForbiddenException('Timeslot is already booked');
+      }
+
+      if (!timeslotIsAvailable) {
+        throw new ForbiddenException('Timeslot is already booked');
+      }
+
+      const newBooking = await this.prisma.booking.create({
+        data: {
+          userId: userId,
+          roomId: body.roomId,
+          state: BookingState.SCHEDULED,
+          timeSlotId: body.timeslotId,
+          date: body.date,
+        },
+      });
+
+      return newBooking;
     }
-
-    const userExists = await this.prisma.user.findUnique({
-      where: { id: userId },
-    });
-    if (!userExists) {
-      throw new NotFoundException(`User not found for ID: ${userId}`);
-    }
-
-    const roundedDate = this.timeSlotService.roundDateToMinutes(new Date(body.date));
-
-    const existingBooking = await this.prisma.booking.findFirst({
-      where: {
-        timeSlotId: body.timeslotId,
-        date: roundedDate,
-      },
-    });
-    if (existingBooking) {
-      throw new ForbiddenException(`Timeslot already booked`);
-    }
-
-    const newBooking = await this.prisma.booking.create({
-      data: {
-        userId,
-        roomId: body.roomId,
-        timeSlotId: body.timeslotId,
-        date: roundedDate,
-        companyId: body.companyId || null,
-        state: BookingState.SCHEDULED,
-      },
-    });
-
-    return newBooking;
   }
 
   public async updateBooking(
