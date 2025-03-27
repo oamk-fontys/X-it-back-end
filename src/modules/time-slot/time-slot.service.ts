@@ -219,19 +219,15 @@ export class TimeSlotService {
 
 
   public async isTimeSlotBooked(timeSlotId: string, date: Date): Promise<boolean> {
+    const normalizedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
     const booking = await this.prisma.booking.findFirst({
       where: {
         timeSlotId,
-        date: date.toISOString(),
+        date: normalizedDate.toISOString(),
       },
     });
 
-    if (!booking) {
-      return true;
-    }
-
-    return false;
+    return !booking;
   }
-
-
 }
