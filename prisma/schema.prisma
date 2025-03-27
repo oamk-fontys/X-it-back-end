@@ -141,6 +141,8 @@ model Booking {
   timeSlot   TimeSlot     @relation(fields: [timeSlotId], references: [id])
   timeSlotId String
   date       DateTime
+
+  @@unique([timeSlotId, date])
 }
 
 model Game {

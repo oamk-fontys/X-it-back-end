@@ -218,17 +218,29 @@ export class TimeSlotService {
   }
 
   public async isTimeSlotBooked(timeSlotId: string, date: Date): Promise<boolean> {
-    const booking = await this.prisma.booking.findFirst({
-      where: {
-        timeSlotId,
-        date: date.toISOString(),
-      },
-    });
+    return await this.prisma.$transaction(async (prisma) => {
+      const existingBooking = await prisma.booking.findFirst({
+        where: {
+          timeSlotId,
+          date: date.toISOString(),
+        },
+      });
 
-    if (!booking) {
+      if (existingBooking) {
+        return false;
+      }
+
+      await prisma.booking.create({
+        data: {
+          timeSlotId,
+          date: date.toISOString(),
+          userId: 'someUserId',
+          roomId: 'someRoomId',
+        },
+      });
+
       return true;
-    }
-
-    return false;
+    });
   }
+
 }
