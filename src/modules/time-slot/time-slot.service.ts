@@ -217,12 +217,34 @@ export class TimeSlotService {
     }
   }
 
-  public async isTimeSlotBooked(timeSlotId: string, date: Date): Promise<boolean> {
-    console.log('Start checking time slot:', { timeSlotId, date });
+  public async isTimeSlotBooked(
+    timeSlotId: string,
+    date: Date,
+    userId: string
+  ): Promise<boolean> {
+    console.log('Start checking time slot:', { timeSlotId, date, userId });
+
+    if (!userId) {
+      console.error('No userId provided!');
+      throw new Error('User ID is required to book a time slot.');
+    }
+
+    // Controleer of de opgegeven userId bestaat in de database
+    const userExists = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!userExists) {
+      console.error(`User ID '${userId}' does not exist.`);
+      throw new Error('Invalid User ID: The user does not exist.');
+    }
+
+    console.log('Valid user found:', userId);
 
     return await this.prisma.$transaction(async (prisma) => {
       console.log('Starting transaction...');
 
+      // Controleer of het tijdslot al geboekt is
       const existingBooking = await prisma.booking.findFirst({
         where: {
           timeSlotId,
@@ -233,27 +255,22 @@ export class TimeSlotService {
       console.log('Existing booking check:', existingBooking);
 
       if (existingBooking) {
-        console.log('Time slot is already booked.');
+        console.log(`Time slot '${timeSlotId}' on '${date}' is already booked.`);
         return false;
       }
 
-      const userId = 'someUserId'; // Dynamisch ophalen of hardcoded waarde
-      console.log('Using user ID:', userId);
-
+      // Boek het tijdslot
       const newBooking = await prisma.booking.create({
         data: {
           timeSlotId,
           date: date.toISOString(),
           userId: userId,
-          roomId: 'someRoomId',
+          roomId: 'someRoomId', // Kan dynamisch worden gemaakt
         },
       });
 
-      console.log('New booking created:', newBooking);
-
+      console.log('New booking created successfully:', newBooking);
       return true;
     });
   }
-
-
 }

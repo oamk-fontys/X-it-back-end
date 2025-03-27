@@ -85,6 +85,7 @@ export class BookingService {
     const timeslotIsAvailable = await this.timeSlotService.isTimeSlotBooked(
       body.timeslotId,
       new Date(body.date),
+      userId,
     );
     if (!timeslotIsAvailable) {
       throw new ForbiddenException('Timeslot is already booked');
