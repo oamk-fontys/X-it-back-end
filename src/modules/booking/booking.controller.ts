@@ -81,16 +81,4 @@ export class BookingController {
   async getAllBookingsByCompanyId(@Param('companyId') companyId: string) {
     return this.bookingService.getAllBookingsByCompanyId(companyId);
   }
-
-  @Get('admin')
-  @ApiOkResponse({
-    description: 'Get all bookings for admins',
-    type: BookingDto,
-    isArray: true,
-  })
-  @IsAuthenticated()
-  async getAllBookingsForAdmins(@Req() req: RequestWithUser) {
-    return this.bookingService.getAllBookingsForAdmins();
-  }
-
 }

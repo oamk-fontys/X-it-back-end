@@ -177,29 +177,4 @@ export class BookingService {
       };
     });
   }
-
-  public async getAllBookingsForAdmins() {
-    const adminBookings = await this.prisma.booking.findMany({
-      where: {
-        user: {
-          role: 'ADMIN',
-        },
-      },
-      include: {
-        room: true,
-        user: true,
-      },
-    });
-
-    return adminBookings.map((booking) => {
-      const minimalUser = plainToInstance(MinimalUserDto, booking.user, {
-        excludeExtraneousValues: true,
-      });
-      return {
-        ...booking,
-        user: minimalUser,
-      };
-    });
-  }
-
 }
