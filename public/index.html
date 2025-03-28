@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload Test</title>
+    <style>
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .token-input {
+            width: 300px;
+            padding: 5px;
+        }
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .button-container {
+            display: flex;
+            align-items: center;
+        }
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>File Upload Test</h1>
+    
+    <form id="uploadForm">
+        <div class="form-group">
+            <label for="bearerToken">Bearer Token:</label>
+            <input 
+                type="text" 
+                id="bearerToken" 
+                class="token-input" 
+                placeholder="Enter your bearer token"
+                required
+            >
+        </div>
+        <div class="form-group">
+            <label for="fileInput">File:</label>
+            <input type="file" id="fileInput" name="file" required>
+        </div>
+        <div class="button-container">
+            <button type="submit" id="submitButton">Upload</button>
+            <div class="spinner" id="loadingSpinner"></div>
+        </div>
+    </form>
+
+    <h3>Response:</h3>
+    <pre id="result"></pre>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const spinner = document.getElementById('loadingSpinner');
+        const submitButton = document.getElementById('submitButton');
+        const resultElement = document.getElementById('result');
+
+        function setLoading(isLoading) {
+            if (isLoading) {
+                form.classList.add('loading');
+                spinner.style.display = 'inline-block';
+                submitButton.textContent = 'Uploading...';
+                resultElement.textContent = 'Uploading file...';
+            } else {
+                form.classList.remove('loading');
+                spinner.style.display = 'none';
+                submitButton.textContent = 'Upload';
+            }
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const bearerToken = document.getElementById('bearerToken').value;
+            
+            try {
+                setLoading(true);
+
+                const response = await fetch('/api/file/upload', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Authorization': `Bearer ${bearerToken}`
+                    }
+                });
+                
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                resultElement.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultElement.textContent = `Error: ${error.message}`;
+            } finally {
+                setLoading(false);
+            }
+        });
+    </script>
+</body>
+</html>
