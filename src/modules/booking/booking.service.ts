@@ -4,14 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { BookingState } from '@prisma/client';
+import { plainToInstance } from 'class-transformer';
 import { PrismaService } from 'src/core/database/prisma.service';
 import { RoomService } from '../room/room.service';
 import { TimeSlotService } from '../time-slot/time-slot.service';
-import { UserService } from '../user/user.service';
-import { CreateEditBookingDto } from './dto/create-edit-booking.dto';
 import { MinimalUserDto } from '../user/dto/minimal-user.dto';
-import { plainToInstance } from 'class-transformer';
-import { ad } from '@faker-js/faker/dist/airline-BXaRegOM';
+import { CreateEditBookingDto } from './dto/create-edit-booking.dto';
 
 @Injectable()
 export class BookingService {
@@ -19,7 +17,16 @@ export class BookingService {
     private readonly prisma: PrismaService,
     private readonly roomService: RoomService,
     private readonly timeSlotService: TimeSlotService,
-  ) { }
+  ) {}
+
+  public async getAllBookings() {
+    return await this.prisma.booking.findMany({
+      include: {
+        room: true,
+        user: true,
+      },
+    });
+  }
 
   public async getAllBookingsByUserId(userId: string) {
     const bookings = await this.prisma.booking.findMany({
@@ -46,8 +53,8 @@ export class BookingService {
   public async getSingleBookingByUserId(userId: string, id: string) {
     const booking = await this.prisma.booking.findFirst({
       where: {
-        id: id,
-        userId: userId,
+        id,
+        userId,
       },
       include: {
         room: true,
@@ -68,7 +75,6 @@ export class BookingService {
       user: minimalUser,
     };
   }
-
 
   public async createBooking(body: CreateEditBookingDto, userId: string) {
     {
