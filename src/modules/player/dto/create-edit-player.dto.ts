@@ -46,13 +46,4 @@ export class CreateEditPlayerDto {
         type: Boolean,
     })
     isAdult: boolean;
-
-    @Expose()
-    @ApiProperty({
-        description: 'User data associated with the player if available',
-        type: UserDto,
-        required: false,
-    })
-    @IsOptional()
-    user?: UserDto;
 }

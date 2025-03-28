@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException,ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../core/database/prisma.service';
 import { UserDto } from '../user/dto/user.dto';
 import { CreateEditGameDto } from './dto/create-edit-game.dto';
@@ -42,7 +42,7 @@ export class GameService {
     }
 
     if (booking.state !== BookingState.SCHEDULED) {
-      throw new ConflictException('Game can only be created for scheduled bookings');
+      throw new BadRequestException('Game can only be created for scheduled bookings');
     }
 
     const room = await this.roomService.getRoomById(body.roomId);
@@ -50,6 +50,10 @@ export class GameService {
     if (!room) {
       throw new NotFoundException('Room not found');
     }
+
+    if (booking.roomId !== body.roomId) {
+      throw new BadRequestException('Room ID mismatch: Game room must match Booking room');
+  }
 
     if (user.role === Role.COMPANY || user.role === Role.ADMIN) {
       if (room.companyId !== user.company.id) {
