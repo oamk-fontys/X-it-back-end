@@ -13,8 +13,21 @@ export interface ClassType<T> {
   new (): T;
 }
 
-interface RelationConfig {
-  [key: string]: ClassType<any>;
+interface NestedRelationConfig {
+  type: ClassType<any>;
+  [key: string]: ClassType<any> | NestedRelationConfig;
+}
+
+type RelationConfig = {
+  [key: string]: ClassType<any> | NestedRelationConfig;
+};
+
+function isClassType<T>(value: any): value is ClassType<T> {
+  return typeof value === 'function';
+}
+
+function isNestedConfig(value: any): value is NestedRelationConfig {
+  return isObject(value) && 'type' in value;
 }
 
 function transformNestedObjects<T>(
@@ -27,14 +40,37 @@ function transformNestedObjects<T>(
 
   // Handle nested relations
   if (isObject(data)) {
-    Object.entries(relations).forEach(([key, relationType]) => {
+    Object.entries(relations).forEach(([key, relationConfig]) => {
       if (data[key]) {
-        if (isArray(data[key])) {
-          transformed[key] = data[key].map((item: any) =>
-            transformNestedObjects(item, relationType),
-          );
-        } else {
-          transformed[key] = transformNestedObjects(data[key], relationType);
+        if (isClassType(relationConfig)) {
+          // Handle direct class type relations
+          if (isArray(data[key])) {
+            transformed[key] = data[key].map((item: any) =>
+              transformNestedObjects(item, relationConfig),
+            );
+          } else {
+            transformed[key] = transformNestedObjects(
+              data[key],
+              relationConfig,
+            );
+          }
+        } else if (isNestedConfig(relationConfig)) {
+          // Handle nested relation config
+          const nestedClassType = relationConfig.type;
+          const nestedRelations: RelationConfig = { ...relationConfig };
+          delete nestedRelations.type;
+
+          if (isArray(data[key])) {
+            transformed[key] = data[key].map((item: any) =>
+              transformNestedObjects(item, nestedClassType, nestedRelations),
+            );
+          } else {
+            transformed[key] = transformNestedObjects(
+              data[key],
+              nestedClassType,
+              nestedRelations,
+            );
+          }
         }
       }
     });
