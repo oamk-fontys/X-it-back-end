@@ -62,7 +62,7 @@ export class BookingController {
     @Req() req: RequestWithUser,
     @Param('id') id: string,
   ) {
-    return this.bookingService.getSingleBookingByUserId(req.user.id, id);
+    return this.bookingService.getBookingById(id, req.user);
   }
 
   @Get('/company/:companyId')
@@ -71,7 +71,13 @@ export class BookingController {
     type: BookingDto,
     isArray: true,
   })
-  @IsAuthenticated()
+  @UseInterceptors(
+    new ResponseInterceptor(BookingDto, {
+      user: MinimalUserDto,
+      room: MinimalRoomDto,
+    }),
+  )
+  @IsAuthenticated([Role.ADMIN, Role.COMPANY])
   async getAllBookingsByCompanyId(@Param('companyId') companyId: string) {
     return this.bookingService.getAllBookingsByCompanyId(companyId);
   }
