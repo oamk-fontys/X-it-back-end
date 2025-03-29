@@ -13,9 +13,13 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { IsAuthenticated } from 'src/core/auth/auth.decorator';
 import { RequestWithUser } from 'src/core/auth/auth.guard';
+import { ResponseInterceptor } from 'src/core/interceptor/response.interceptor';
+import { MinimalRoomDto } from 'src/modules/room/dto/minimal-room.dto';
+import { MinimalUserDto } from 'src/modules/user/dto/minimal-user.dto';
 import { BookingService } from './booking.service';
 import { BookingDto } from './dto/booking.dto';
 import { CreateEditBookingDto } from './dto/create-edit-booking.dto';
+
 @Controller('booking')
 @UseInterceptors(ClassSerializerInterceptor)
 export class BookingController {
@@ -28,6 +32,12 @@ export class BookingController {
     isArray: true,
   })
   @IsAuthenticated([Role.ADMIN, Role.USER])
+  @UseInterceptors(
+    new ResponseInterceptor(BookingDto, {
+      user: MinimalUserDto,
+      room: MinimalRoomDto,
+    }),
+  )
   async getAllBookings(@Req() req: RequestWithUser) {
     if (req.user.role === Role.ADMIN) {
       return this.bookingService.getAllBookings();
@@ -42,6 +52,12 @@ export class BookingController {
     type: BookingDto,
   })
   @IsAuthenticated()
+  @UseInterceptors(
+    new ResponseInterceptor(BookingDto, {
+      user: MinimalUserDto,
+      room: MinimalRoomDto,
+    }),
+  )
   async getSingleBookingByUserId(
     @Req() req: RequestWithUser,
     @Param('id') id: string,

@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BookingState } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
-import { RoomDto } from 'src/modules/room/dto/room.dto';
+import { MinimalRoomDto } from 'src/modules/room/dto/minimal-room.dto';
 import { MinimalUserDto } from 'src/modules/user/dto/minimal-user.dto';
 
 @Exclude()
@@ -9,10 +10,29 @@ export class BookingDto {
   @Expose()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'The room',
-    type: RoomDto,
+    description: 'The id of the booking',
+    example: '1',
+    type: String,
   })
-  room: RoomDto;
+  id: string;
+
+  @Expose()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The status of the booking',
+    enum: BookingState,
+    enumName: 'BookingState',
+    example: BookingState.SCHEDULED,
+  })
+  state: BookingState;
+
+  @Expose()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The room',
+    type: MinimalRoomDto,
+  })
+  room: MinimalRoomDto;
 
   @Expose()
   @IsNotEmpty()
