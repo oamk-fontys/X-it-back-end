@@ -44,4 +44,14 @@ export class CreateEditGameDto {
         required: false,
     })
     endTime?: string;
+
+    @Expose()
+    @IsString()
+    @ApiProperty({
+        description: 'The ID of the booking associated with this game',
+        example: '617949f8-0c4e-4bb8-b13b-c24fd5175f3b',
+        type: String,
+        required: true,
+    })
+    bookingId: string;
 }

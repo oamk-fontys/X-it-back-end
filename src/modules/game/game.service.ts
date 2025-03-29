@@ -1,11 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException,ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../core/database/prisma.service';
-import { Game } from '@prisma/client';
+import { UserDto } from '../user/dto/user.dto';
 import { CreateEditGameDto } from './dto/create-edit-game.dto';
+import { BookingState, Role } from '@prisma/client';
+import { BookingService } from '../booking/booking.service';
+import { RoomService } from '../room/room.service';
 
 @Injectable()
 export class GameService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService,
+    private readonly bookingService: BookingService,
+    private readonly roomService: RoomService,
+  ) { }
 
   // Get all games
   public async getGames() {
@@ -26,22 +32,40 @@ export class GameService {
   }
 
   // Create a new game
-  public async createGame(body: CreateEditGameDto) {
-    // Ensure the room exists before proceeding
-    const room = await this.prisma.room.findUnique({
-      where: { id: body.roomId },
-    });
+  public async createGame(body: CreateEditGameDto, user: UserDto) {
+
+    const booking = await this.bookingService.getBookingById(body.bookingId);
+    console.log('Booking retrieved:', booking);
+
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+
+    if (booking.state !== BookingState.SCHEDULED) {
+      throw new BadRequestException('Game can only be created for scheduled bookings');
+    }
+
+    const room = await this.roomService.getRoomById(body.roomId);
 
     if (!room) {
       throw new NotFoundException('Room not found');
     }
 
-    // Create the game record, allowing null for startTime and endTime
+    if (booking.roomId !== body.roomId) {
+      throw new BadRequestException('Room ID mismatch: Game room must match Booking room');
+  }
+
+    if (user.role === Role.COMPANY || user.role === Role.ADMIN) {
+      if (room.companyId !== user.company.id) {
+        throw new ForbiddenException('You are not allowed to create a game in a room that belongs to another company');
+      }
+    }
+
     const newGame = await this.prisma.game.create({
       data: {
         ...body,
-        startTime: body.startTime || null, // if startTime is provided, use it; otherwise, set it to null
-        endTime: body.endTime || null, // if endTime is provided, use it; otherwise, set it to null
+        startTime: body.startTime || null,
+        endTime: body.endTime || null,
       },
     });
 
@@ -49,7 +73,7 @@ export class GameService {
   }
 
   // Full update of an existing game
-  public async updateGame(id: string, body: CreateEditGameDto) {
+  public async updateGame(id: string, body: CreateEditGameDto, user: UserDto) {
     const room = await this.prisma.room.findUnique({
       where: { id: body.roomId },
     });
@@ -57,6 +81,8 @@ export class GameService {
     if (body.roomId && !room) {
       throw new NotFoundException('Room not found');
     }
+
+    await this.hasAccessToGame(id, user)
 
     const gameToUpdate = await this.prisma.game.findUnique({
       where: { id },
@@ -77,7 +103,7 @@ export class GameService {
   }
 
   // Partial update of an existing game (PATCH)
-  public async partialUpdateGame(id: string, body: Partial<CreateEditGameDto>) {
+  public async partialUpdateGame(id: string, body: Partial<CreateEditGameDto>, user: UserDto) {
     const room = await this.prisma.room.findUnique({
       where: { id: body.roomId },
     });
@@ -85,6 +111,8 @@ export class GameService {
     if (body.roomId && !room) {
       throw new NotFoundException('Room not found');
     }
+
+    await this.hasAccessToGame(id, user)
 
     const gameToUpdate = await this.prisma.game.findUnique({
       where: { id },
@@ -109,7 +137,7 @@ export class GameService {
   }
 
   // Delete a game
-  public async deleteGame(id: string) {
+  public async deleteGame(id: string, user: UserDto) {
     const gameToDelete = await this.prisma.game.findUnique({
       where: { id },
     });
@@ -118,8 +146,33 @@ export class GameService {
       throw new NotFoundException('Game not found');
     }
 
+    await this.hasAccessToGame(id, user)
+
     return await this.prisma.game.delete({
       where: { id },
     });
+  }
+
+  private async hasAccessToGame(gameId: string, user: UserDto): Promise<void> {
+    const game = await this.prisma.game.findUnique({
+      where: { id: gameId },
+      include: {
+        room: {
+          include: {
+            company: true,
+          },
+        },
+      },
+    });
+
+    if (!game) {
+      throw new NotFoundException('Game not found');
+    }
+
+    if (user.role === Role.COMPANY || user.role === Role.ADMIN) {
+      if (game.room.company?.id !== user.company.id) {
+        throw new ForbiddenException('You are not allowed to modify this game');
+      }
+    }
   }
 }

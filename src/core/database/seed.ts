@@ -197,48 +197,50 @@ async function main() {
         });
       }),
   );
-
-  // Create games for each booking
-  const games = await Promise.all(
-    bookings.map(async (booking) => {
-      return await prisma.game.create({
-        data: {
-          teamName: faker.company.name(),
-          roomId: booking.roomId,
-          bookingId: booking.id,
-          startTime: faker.date.future(),
-          endTime: faker.date.future(),
-        },
-      });
-    }),
-  );
-
-  // Create players for each game
-  const players = await Promise.all(
-    games.flatMap(async (game) => {
-      // Create 4-6 players per game
-      const numberOfPlayers = faker.number.int({ min: 4, max: 6 });
-      return Promise.all(
-        Array(numberOfPlayers)
-          .fill(null)
-          .map(async () => {
-            const isGuest = faker.datatype.boolean();
-            return await prisma.player.create({
-              data: {
-                gameId: game.id,
-                isGuest,
-                isAdult: faker.datatype.boolean(),
-                userId: isGuest
-                  ? null
-                  : regularUsers[
+  /*
+    // Create games for each booking
+    const games = await Promise.all(
+      bookings.map(async (booking) => {
+        return await prisma.game.create({
+          data: {
+            teamName: faker.company.name(),
+            roomId: booking.roomId,
+            bookingId: booking.id,
+            startTime: faker.date.future(),
+            endTime: faker.date.future(),
+          },
+        });
+      }),
+    );
+    */
+  /*
+    // Create players for each game
+    const players = await Promise.all(
+      games.flatMap(async (game) => {
+        // Create 4-6 players per game
+        const numberOfPlayers = faker.number.int({ min: 4, max: 6 });
+        return Promise.all(
+          Array(numberOfPlayers)
+            .fill(null)
+            .map(async () => {
+              const isGuest = faker.datatype.boolean();
+              return await prisma.player.create({
+                data: {
+                  gameId: game.id,
+                  isGuest,
+                  isAdult: faker.datatype.boolean(),
+                  userId: isGuest
+                    ? null
+                    : regularUsers[
                       Math.floor(Math.random() * regularUsers.length)
                     ].id,
-              },
-            });
-          }),
-      );
-    }),
-  );
+                },
+              });
+            }),
+        );
+      }),
+    );
+    */
 
   console.log({
     companiesCount: companies.length,
@@ -248,8 +250,8 @@ async function main() {
     roomsCount: rooms.flat().length,
     timeSlotsCount: timeSlots.flat().flat().length,
     bookingsCount: bookings.length,
-    gamesCount: games.length,
-    playersCount: players.flat().length,
+    //gamesCount: games.length,
+    //playersCount: players.flat().length,
   });
 }
 

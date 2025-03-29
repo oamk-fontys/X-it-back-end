@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Expose } from "class-transformer";
 import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { UserDto } from "src/modules/user/dto/user.dto";
 
 export class PlayerDto {
   @Expose()
@@ -48,4 +49,13 @@ export class PlayerDto {
   @IsBoolean()
   @IsNotEmpty()
   isAdult: boolean;
+
+  @Expose()
+  @ApiProperty({
+    description: 'User data associated with the player if available',
+    type: UserDto,
+    required: false,
+  })
+  @IsOptional()
+  user?: UserDto;
 }

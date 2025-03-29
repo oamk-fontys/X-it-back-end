@@ -153,8 +153,8 @@ model Game {
   updatedAt DateTime  @updatedAt
   room      Room      @relation(fields: [roomId], references: [id])
   players   Player[]
-  booking   Booking?  @relation(fields: [bookingId], references: [id])
-  bookingId String?
+  booking   Booking   @relation(fields: [bookingId], references: [id])
+  bookingId String
 }
 
 model Player {

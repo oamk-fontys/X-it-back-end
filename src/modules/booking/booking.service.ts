@@ -16,7 +16,7 @@ export class BookingService {
     private readonly prisma: PrismaService,
     private readonly roomService: RoomService,
     private readonly timeSlotService: TimeSlotService,
-  ) {}
+  ) { }
 
   public async getAllBookings() {
     return await this.prisma.booking.findMany({
@@ -165,5 +165,17 @@ export class BookingService {
         state: BookingState.CANCELLED,
       },
     });
+  }
+
+  public async getBookingById(id: string) {
+    const booking = await this.prisma.booking.findUnique({
+      where: { id },
+    });
+
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+
+    return booking;
   }
 }

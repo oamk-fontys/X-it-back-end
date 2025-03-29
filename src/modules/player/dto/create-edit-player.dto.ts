@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude, Expose } from "class-transformer";
 import { IsBoolean, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { UserDto } from "src/modules/user/dto/user.dto";
 
 @Exclude()
 export class CreateEditPlayerDto {
