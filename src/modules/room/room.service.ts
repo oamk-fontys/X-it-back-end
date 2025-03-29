@@ -9,7 +9,11 @@ export class RoomService {
   public async getRooms() {
     return await this.prisma.room.findMany({
       include: {
-        company: true,
+        company: {
+          include: {
+            logo: true,
+          },
+        },
       },
     });
   }
@@ -18,7 +22,11 @@ export class RoomService {
     const room = await this.prisma.room.findUnique({
       where: { id },
       include: {
-        company: true,
+        company: {
+          include: {
+            logo: true,
+          },
+        },
       },
     });
 
@@ -41,7 +49,11 @@ export class RoomService {
     return await this.prisma.room.findMany({
       where: { companyId },
       include: {
-        company: true,
+        company: {
+          include: {
+            logo: true,
+          },
+        },
       },
     });
   }

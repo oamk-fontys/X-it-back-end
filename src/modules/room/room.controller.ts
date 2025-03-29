@@ -6,10 +6,13 @@ import {
   Param,
   Post,
   Put,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { IsAuthenticated } from 'src/core/auth/auth.decorator';
+import { ResponseInterceptor } from 'src/core/interceptor/response.interceptor';
+import { CompanyDto } from '../company/dto/company.dto';
 import { CreateEditRoomDto } from './dto/create-edit-room.dto';
 import { RoomDto } from './dto/room.dto';
 import { RoomService } from './room.service';
@@ -24,7 +27,11 @@ export class RoomController {
     type: RoomDto,
     isArray: true,
   })
-  @IsAuthenticated()
+  @UseInterceptors(
+    new ResponseInterceptor(RoomDto, {
+      company: CompanyDto,
+    }),
+  )
   async getRooms() {
     return this.roomService.getRooms();
   }
@@ -34,7 +41,11 @@ export class RoomController {
     description: 'Get one room by ID',
     type: RoomDto,
   })
-  @IsAuthenticated()
+  @UseInterceptors(
+    new ResponseInterceptor(RoomDto, {
+      company: CompanyDto,
+    }),
+  )
   async getRoomById(@Param('id') id: string) {
     return this.roomService.getRoomById(id);
   }
@@ -45,7 +56,11 @@ export class RoomController {
     type: RoomDto,
     isArray: true,
   })
-  @IsAuthenticated()
+  @UseInterceptors(
+    new ResponseInterceptor(RoomDto, {
+      company: CompanyDto,
+    }),
+  )
   async getRoomsByCompanyId(@Param('companyId') companyId: string) {
     return this.roomService.getRoomsByCompanyId(companyId);
   }
