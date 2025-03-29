@@ -1,17 +1,23 @@
-import { BadRequestException,ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../core/database/prisma.service';
-import { UserDto } from '../user/dto/user.dto';
-import { CreateEditGameDto } from './dto/create-edit-game.dto';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { BookingState, Role } from '@prisma/client';
+import { PrismaService } from '../../core/database/prisma.service';
 import { BookingService } from '../booking/booking.service';
 import { RoomService } from '../room/room.service';
+import { UserDto } from '../user/dto/user.dto';
+import { CreateEditGameDto } from './dto/create-edit-game.dto';
 
 @Injectable()
 export class GameService {
-  constructor(private readonly prisma: PrismaService,
+  constructor(
+    private readonly prisma: PrismaService,
     private readonly bookingService: BookingService,
     private readonly roomService: RoomService,
-  ) { }
+  ) {}
 
   // Get all games
   public async getGames() {
@@ -33,8 +39,10 @@ export class GameService {
 
   // Create a new game
   public async createGame(body: CreateEditGameDto, user: UserDto) {
-
-    const booking = await this.bookingService.getBookingById(body.bookingId);
+    const booking = await this.bookingService.getBookingById(
+      body.bookingId,
+      user,
+    );
     console.log('Booking retrieved:', booking);
 
     if (!booking) {
@@ -42,7 +50,9 @@ export class GameService {
     }
 
     if (booking.state !== BookingState.SCHEDULED) {
-      throw new BadRequestException('Game can only be created for scheduled bookings');
+      throw new BadRequestException(
+        'Game can only be created for scheduled bookings',
+      );
     }
 
     const room = await this.roomService.getRoomById(body.roomId);
@@ -52,12 +62,16 @@ export class GameService {
     }
 
     if (booking.roomId !== body.roomId) {
-      throw new BadRequestException('Room ID mismatch: Game room must match Booking room');
-  }
+      throw new BadRequestException(
+        'Room ID mismatch: Game room must match Booking room',
+      );
+    }
 
     if (user.role === Role.COMPANY || user.role === Role.ADMIN) {
       if (room.companyId !== user.company.id) {
-        throw new ForbiddenException('You are not allowed to create a game in a room that belongs to another company');
+        throw new ForbiddenException(
+          'You are not allowed to create a game in a room that belongs to another company',
+        );
       }
     }
 
@@ -82,7 +96,7 @@ export class GameService {
       throw new NotFoundException('Room not found');
     }
 
-    await this.hasAccessToGame(id, user)
+    await this.hasAccessToGame(id, user);
 
     const gameToUpdate = await this.prisma.game.findUnique({
       where: { id },
@@ -103,7 +117,11 @@ export class GameService {
   }
 
   // Partial update of an existing game (PATCH)
-  public async partialUpdateGame(id: string, body: Partial<CreateEditGameDto>, user: UserDto) {
+  public async partialUpdateGame(
+    id: string,
+    body: Partial<CreateEditGameDto>,
+    user: UserDto,
+  ) {
     const room = await this.prisma.room.findUnique({
       where: { id: body.roomId },
     });
@@ -112,7 +130,7 @@ export class GameService {
       throw new NotFoundException('Room not found');
     }
 
-    await this.hasAccessToGame(id, user)
+    await this.hasAccessToGame(id, user);
 
     const gameToUpdate = await this.prisma.game.findUnique({
       where: { id },
@@ -146,7 +164,7 @@ export class GameService {
       throw new NotFoundException('Game not found');
     }
 
-    await this.hasAccessToGame(id, user)
+    await this.hasAccessToGame(id, user);
 
     return await this.prisma.game.delete({
       where: { id },
