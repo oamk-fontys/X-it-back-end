@@ -4,11 +4,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { BookingState } from '@prisma/client';
-import { plainToInstance } from 'class-transformer';
 import { PrismaService } from 'src/core/database/prisma.service';
 import { RoomService } from '../room/room.service';
 import { TimeSlotService } from '../time-slot/time-slot.service';
-import { MinimalUserDto } from '../user/dto/minimal-user.dto';
 import { CreateEditBookingDto } from './dto/create-edit-booking.dto';
 
 @Injectable()
@@ -29,7 +27,7 @@ export class BookingService {
   }
 
   public async getAllBookingsByUserId(userId: string) {
-    const bookings = await this.prisma.booking.findMany({
+    return await this.prisma.booking.findMany({
       where: {
         userId: userId,
       },
@@ -38,15 +36,17 @@ export class BookingService {
         user: true,
       },
     });
+  }
 
-    return bookings.map((booking) => {
-      const minimalUser = plainToInstance(MinimalUserDto, booking.user, {
-        excludeExtraneousValues: true,
-      });
-      return {
-        ...booking,
-        user: minimalUser,
-      };
+  public async getAllBookingsByCompanyId(companyId: string) {
+    return await this.prisma.booking.findMany({
+      where: {
+        companyId: companyId,
+      },
+      include: {
+        room: true,
+        user: true,
+      },
     });
   }
 
@@ -66,14 +66,7 @@ export class BookingService {
       throw new NotFoundException('Booking not found');
     }
 
-    const minimalUser = plainToInstance(MinimalUserDto, booking.user, {
-      excludeExtraneousValues: true,
-    });
-
-    return {
-      ...booking,
-      user: minimalUser,
-    };
+    return booking;
   }
 
   public async createBooking(body: CreateEditBookingDto, userId: string) {
@@ -159,28 +152,6 @@ export class BookingService {
       data: {
         state: BookingState.CANCELLED,
       },
-    });
-  }
-
-  public async getAllBookingsByCompanyId(companyId: string) {
-    const bookings = await this.prisma.booking.findMany({
-      where: {
-        companyId: companyId,
-      },
-      include: {
-        room: true,
-        user: true,
-      },
-    });
-
-    return bookings.map((booking) => {
-      const minimalUser = plainToInstance(MinimalUserDto, booking.user, {
-        excludeExtraneousValues: true,
-      });
-      return {
-        ...booking,
-        user: minimalUser,
-      };
     });
   }
 }
