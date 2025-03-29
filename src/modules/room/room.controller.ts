@@ -13,6 +13,7 @@ import { Role } from '@prisma/client';
 import { IsAuthenticated } from 'src/core/auth/auth.decorator';
 import { ResponseInterceptor } from 'src/core/interceptor/response.interceptor';
 import { CompanyDto } from '../company/dto/company.dto';
+import { FileDto } from '../file/dto/file.dto';
 import { CreateEditRoomDto } from './dto/create-edit-room.dto';
 import { RoomDto } from './dto/room.dto';
 import { RoomService } from './room.service';
@@ -29,7 +30,10 @@ export class RoomController {
   })
   @UseInterceptors(
     new ResponseInterceptor(RoomDto, {
-      company: CompanyDto,
+      company: {
+        type: CompanyDto,
+        logo: FileDto,
+      },
     }),
   )
   async getRooms() {
