@@ -47,7 +47,10 @@ export class RoomController {
   })
   @UseInterceptors(
     new ResponseInterceptor(RoomDto, {
-      company: CompanyDto,
+      company: {
+        type: CompanyDto,
+        logo: FileDto,
+      },
     }),
   )
   async getRoomById(@Param('id') id: string) {
@@ -62,7 +65,10 @@ export class RoomController {
   })
   @UseInterceptors(
     new ResponseInterceptor(RoomDto, {
-      company: CompanyDto,
+      company: {
+        type: CompanyDto,
+        logo: FileDto,
+      },
     }),
   )
   async getRoomsByCompanyId(@Param('companyId') companyId: string) {
