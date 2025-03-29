@@ -57,11 +57,7 @@ export class BookingService {
         id,
       },
       include: {
-        room: {
-          include: {
-            company: true,
-          },
-        },
+        room: true,
         user: true,
       },
     });
