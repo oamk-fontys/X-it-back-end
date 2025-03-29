@@ -86,6 +86,13 @@ export class CompanyDto {
   verified: boolean;
 
   @Expose()
+  @ApiProperty({
+    description: 'logo of the company',
+    type: FileDto,
+  })
+  logo: FileDto;
+
+  @Expose()
   @IsNotEmpty()
   @ApiProperty({
     description: 'created at company',
@@ -93,13 +100,6 @@ export class CompanyDto {
     type: Date,
   })
   createdAt: Date;
-
-  @Expose()
-  @ApiProperty({
-    description: 'logo of the company',
-    type: FileDto,
-  })
-  logo: FileDto;
 
   @Expose()
   @ApiProperty({
