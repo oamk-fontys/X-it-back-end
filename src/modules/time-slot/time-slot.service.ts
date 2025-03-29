@@ -217,18 +217,22 @@ export class TimeSlotService {
     }
   }
 
+
   public async isTimeSlotBooked(timeSlotId: string, date: Date): Promise<boolean> {
+    const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
+    const endOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59);
+
     const booking = await this.prisma.booking.findFirst({
       where: {
         timeSlotId,
-        date: date.toISOString(),
+        date: {
+          gte: startOfDay.toISOString(),
+          lte: endOfDay.toISOString(),
+        },
       },
     });
 
-    if (!booking) {
-      return true;
-    }
-
-    return false;
+    return !booking;
   }
+
 }

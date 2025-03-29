@@ -3,21 +3,29 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { BookingState } from '@prisma/client';
+import { BookingState, Role } from '@prisma/client';
 import { PrismaService } from 'src/core/database/prisma.service';
 import { RoomService } from '../room/room.service';
 import { TimeSlotService } from '../time-slot/time-slot.service';
-import { UserService } from '../user/user.service';
+import { UserDto } from '../user/dto/user.dto';
 import { CreateEditBookingDto } from './dto/create-edit-booking.dto';
 
 @Injectable()
 export class BookingService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly userService: UserService,
     private readonly roomService: RoomService,
     private readonly timeSlotService: TimeSlotService,
   ) {}
+
+  public async getAllBookings() {
+    return await this.prisma.booking.findMany({
+      include: {
+        room: true,
+        user: true,
+      },
+    });
+  }
 
   public async getAllBookingsByUserId(userId: string) {
     return await this.prisma.booking.findMany({
@@ -26,15 +34,31 @@ export class BookingService {
       },
       include: {
         room: true,
+        user: true,
       },
     });
   }
 
-  public async getSingleBookingByUserId(userId: string, id: string) {
+  public async getAllBookingsByCompanyId(companyId: string) {
+    return await this.prisma.booking.findMany({
+      where: {
+        companyId: companyId,
+      },
+      include: {
+        room: true,
+        user: true,
+      },
+    });
+  }
+
+  public async getBookingById(id: string, user: UserDto) {
     const booking = await this.prisma.booking.findFirst({
       where: {
-        id: id,
-        userId: userId,
+        id,
+      },
+      include: {
+        room: true,
+        user: true,
       },
     });
 
@@ -42,7 +66,19 @@ export class BookingService {
       throw new NotFoundException('Booking not found');
     }
 
+    await this.hasAccessToBooking(booking, user);
+
     return booking;
+  }
+
+  private hasAccessToBooking(booking: any, user: UserDto) {
+    if (user.role === Role.USER) {
+      if (booking.user.id !== user.id) {
+        throw new ForbiddenException(
+          'You are not allowed to access this booking',
+        );
+      }
+    }
   }
 
   public async createBooking(body: CreateEditBookingDto, userId: string) {

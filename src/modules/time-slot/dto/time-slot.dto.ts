@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { WeekDay } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
 import { BookingDto } from 'src/modules/booking/dto/booking.dto';
-import { RoomDto } from 'src/modules/room/dto/room.dto';
+import { MinimalRoomDto } from 'src/modules/room/dto/minimal-room.dto';
 
 @Exclude()
 export class TimeSlotDto {
@@ -37,9 +37,9 @@ export class TimeSlotDto {
   @Expose()
   @ApiProperty({
     description: 'The room of the time slot',
-    type: RoomDto,
+    type: MinimalRoomDto,
   })
-  room: RoomDto;
+  room: MinimalRoomDto;
 
   @Expose()
   @ApiProperty({
