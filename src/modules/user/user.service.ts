@@ -69,13 +69,10 @@ export class UserService {
     });
   }
 
+  //
   public async getUserByEmail(email: string) {
     return await this.prisma.user.findUnique({
       where: { email },
-      select: {
-        ...defaultUserSelect,
-        password: true,
-      },
     });
   }
 
