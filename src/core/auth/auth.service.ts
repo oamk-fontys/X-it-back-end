@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
+import { plainToInstance } from 'class-transformer';
+import { MinimalUserDto } from 'src/modules/user/dto/minimal-user.dto';
 import { UserService } from 'src/modules/user/user.service';
 import { AccessCodeDto } from './dto/access-code.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -30,7 +32,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { ...user };
+    const payload = { ...plainToInstance(MinimalUserDto, user) };
 
     return {
       access_token: await this.jwtService.signAsync(payload),

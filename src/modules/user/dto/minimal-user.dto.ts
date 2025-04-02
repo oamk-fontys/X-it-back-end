@@ -22,6 +22,14 @@ export class MinimalUserDto {
 
   @Expose()
   @ApiProperty({
+    description: 'The username of the user',
+    example: 'johndoe',
+  })
+  @IsString()
+  username: string;
+
+  @Expose()
+  @ApiProperty({
     description: 'The first name of the user',
     example: 'John',
   })
