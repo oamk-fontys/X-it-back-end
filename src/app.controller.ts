@@ -2,6 +2,7 @@ import { Controller, Get, Param, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { join } from 'path';
 import { AppService } from './app.service';
+import { ApiExcludeEndpoint } from '@nestjs/swagger';
 
 @Controller()
 export class AppController {
@@ -13,6 +14,7 @@ export class AppController {
   }
 
   @Get('file')
+  @ApiExcludeEndpoint()
   serveStatic(@Param('*') path: string, @Res() res: Response) {
     console.log('serveStatic', path);
     const filePath = join(__dirname, '..', 'public', path || 'index.html');
