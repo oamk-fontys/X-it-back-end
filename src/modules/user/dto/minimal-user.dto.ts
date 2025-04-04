@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
-import { IsEmail, IsPhoneNumber, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsPhoneNumber, IsString } from 'class-validator';
 
 @Exclude()
 export class MinimalUserDto {
@@ -51,4 +52,13 @@ export class MinimalUserDto {
   })
   @IsPhoneNumber()
   phoneNumber: string;
+
+  @Expose()
+  @ApiProperty({
+    description: 'The role of the user',
+    enum: Role,
+    example: Role.USER,
+  })
+  @IsEnum(Role)
+  role: Role;
 }
