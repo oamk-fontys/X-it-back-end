@@ -9,21 +9,62 @@ import { PrismaService } from 'src/core/database/prisma.service';
 import { UserDto } from '../user/dto/user.dto';
 import { CreateEditTimeSlotDto } from './dto/create-edit-time-slot.dto';
 
-
 @Injectable()
 export class TimeSlotService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
-  async getTimeSlots(roomId: string) {
-    return await this.prisma.timeSlot.findMany({
+  async getTimeSlots(roomId: string, date?: Date) {
+    const timeSlots = await this.prisma.timeSlot.findMany({
       where: {
         roomId,
       },
       include: {
         room: true,
-        booking: true,
+        booking: {
+          where: date
+            ? {
+                date: {
+                  gte: new Date(new Date(date).setHours(0, 0, 0, 0)),
+                  lt: new Date(new Date(date).setHours(23, 59, 59, 999)),
+                },
+              }
+            : undefined,
+        },
       },
     });
+
+    return timeSlots.map((timeSlot) => ({
+      ...timeSlot,
+      isAvailable: timeSlot.booking.length === 0,
+    }));
+  }
+
+  async getTimeSlotById(id: string, date?: Date) {
+    const timeSlot = await this.prisma.timeSlot.findUnique({
+      where: { id },
+      include: {
+        room: true,
+        booking: {
+          where: date
+            ? {
+                date: {
+                  gte: new Date(new Date(date).setHours(0, 0, 0, 0)),
+                  lt: new Date(new Date(date).setHours(23, 59, 59, 999)),
+                },
+              }
+            : undefined,
+        },
+      },
+    });
+
+    if (!timeSlot) {
+      throw new NotFoundException('Time slot not found');
+    }
+
+    return {
+      ...timeSlot,
+      isAvailable: timeSlot.booking.length === 0,
+    };
   }
 
   async createTimeSlot(body: CreateEditTimeSlotDto, user: UserDto) {
@@ -217,10 +258,26 @@ export class TimeSlotService {
     }
   }
 
-
-  public async isTimeSlotBooked(timeSlotId: string, date: Date): Promise<boolean> {
-    const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0);
-    const endOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59);
+  public async isTimeSlotBooked(
+    timeSlotId: string,
+    date: Date,
+  ): Promise<boolean> {
+    const startOfDay = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      0,
+      0,
+      0,
+    );
+    const endOfDay = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      23,
+      59,
+      59,
+    );
 
     const booking = await this.prisma.booking.findFirst({
       where: {
@@ -234,5 +291,4 @@ export class TimeSlotService {
 
     return !booking;
   }
-
 }
