@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { WeekDay } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
-import { BookingDto } from 'src/modules/booking/dto/booking.dto';
 import { MinimalRoomDto } from 'src/modules/room/dto/minimal-room.dto';
 
 @Exclude()
@@ -43,8 +42,8 @@ export class TimeSlotDto {
 
   @Expose()
   @ApiProperty({
-    description: 'The booking of the time slot',
-    type: BookingDto,
+    description: 'The availability of the time slot',
+    type: Boolean,
   })
-  booking: BookingDto;
+  isAvailable: boolean;
 }

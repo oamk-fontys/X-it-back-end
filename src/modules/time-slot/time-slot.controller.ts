@@ -4,21 +4,26 @@ import {
   Delete,
   Get,
   Param,
+  ParseDatePipe,
   Post,
   Put,
+  Query,
   Req,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { ApiOkResponse, ApiQuery } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { IsAuthenticated } from 'src/core/auth/auth.decorator';
 import { RequestWithUser } from 'src/core/auth/auth.guard';
+import { ResponseInterceptor } from 'src/core/interceptor/response.interceptor';
+import { MinimalRoomDto } from '../room/dto/minimal-room.dto';
 import { CreateEditTimeSlotDto } from './dto/create-edit-time-slot.dto';
 import { TimeSlotDto } from './dto/time-slot.dto';
 import { TimeSlotService } from './time-slot.service';
 
 @Controller('time-slots')
 export class TimeSlotController {
-  constructor(private readonly timeSlotService: TimeSlotService) { }
+  constructor(private readonly timeSlotService: TimeSlotService) {}
 
   @Get(':roomId')
   @IsAuthenticated()
@@ -27,8 +32,21 @@ export class TimeSlotController {
     type: TimeSlotDto,
     isArray: true,
   })
-  async getTimeSlots(@Param('roomId') roomId: string) {
-    return this.timeSlotService.getTimeSlots(roomId);
+  @ApiQuery({
+    name: 'date',
+    type: Date,
+    required: false,
+  })
+  @UseInterceptors(
+    new ResponseInterceptor(TimeSlotDto, {
+      room: MinimalRoomDto,
+    }),
+  )
+  async getTimeSlots(
+    @Param('roomId') roomId: string,
+    @Query('date', new ParseDatePipe({ optional: true })) date?: Date,
+  ) {
+    return this.timeSlotService.getTimeSlots(roomId, date);
   }
 
   @Post()

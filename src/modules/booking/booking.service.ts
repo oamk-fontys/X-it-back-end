@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -89,23 +90,15 @@ export class BookingService {
         throw new NotFoundException('Room not found');
       }
 
-      const timeslotExists = await this.timeSlotService.getTimeSlots(
-        body.timeslotId,
-      );
-      if (!timeslotExists) {
-        throw new NotFoundException('Timeslot not found');
-      }
+      const date = new Date(body.date);
 
-      const timeslotIsAvailable = await this.timeSlotService.isTimeSlotBooked(
+      const timeslot = await this.timeSlotService.getTimeSlotById(
         body.timeslotId,
-        new Date(body.date),
+        date,
       );
-      if (!timeslotIsAvailable) {
-        throw new ForbiddenException('Timeslot is already booked');
-      }
 
-      if (!timeslotIsAvailable) {
-        throw new ForbiddenException('Timeslot is already booked');
+      if (!timeslot.isAvailable) {
+        throw new BadRequestException('Timeslot is already booked');
       }
 
       const newBooking = await this.prisma.booking.create({
@@ -114,7 +107,7 @@ export class BookingService {
           roomId: body.roomId,
           state: BookingState.SCHEDULED,
           timeSlotId: body.timeslotId,
-          date: body.date,
+          date,
         },
       });
 
