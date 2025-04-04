@@ -2,13 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
 import { FileDto } from 'src/modules/file/dto/file.dto';
+import { MinimalUserDto } from 'src/modules/user/dto/minimal-user.dto';
 
 @Exclude()
 export class CompanyDto {
   @Expose()
   @ApiProperty({
     description: 'company id',
-    example: '4',
+    example: '3540f204-fef3-4f1b-92c8-998282be8def',
     type: String,
   })
   id: string;
@@ -47,7 +48,7 @@ export class CompanyDto {
     example: '98b98e99-8aae-4217-979a-1abf64774ade',
     type: String,
   })
-  ownerId: string;
+  owner: MinimalUserDto;
 
   @Expose()
   @IsNotEmpty()
