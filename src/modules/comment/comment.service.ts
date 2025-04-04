@@ -56,7 +56,7 @@ export class CommentService {
             data: {
                 userId: body.userId,
                 roomId: body.roomId,
-                commentText: body.content,
+                commentText: body.commentText,
                 commentType: body.commentType || CommentType.WITHOUT_SPOILER,
             },
         });
@@ -79,7 +79,7 @@ export class CommentService {
             data: {
                 userId: body.userId,
                 roomId: body.roomId,
-                commentText: body.content,
+                commentText: body.commentText,
             },
         });
     }

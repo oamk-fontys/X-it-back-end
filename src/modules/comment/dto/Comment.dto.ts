@@ -15,11 +15,11 @@ export class CommentDto {
     @Expose()
     @IsNotEmpty()
     @ApiProperty({
-        description: 'The content of the comment',
+        description: 'The text of the comment',
         example: 'This is a comment',
         type: String,
     })
-    content: string;
+    commentText: string;
 
     @Expose()
     @IsNotEmpty()
