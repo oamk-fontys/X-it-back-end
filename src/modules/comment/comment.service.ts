@@ -11,8 +11,13 @@ export class CommentService {
 
 
     public async getComments() {
-        return await this.prisma.comment.findMany();
+        return await this.prisma.comment.findMany({
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
     }
+
 
     public async getCommentById(id: string) {
         const comment = await this.prisma.comment.findUnique({
@@ -52,7 +57,7 @@ export class CommentService {
                 userId: body.userId,
                 roomId: body.roomId,
                 commentText: body.content,
-                CommentType: body.commentType || CommentType.WITHOUT_SPOILER,
+                commentType: body.commentType || CommentType.WITHOUT_SPOILER,
             },
         });
 
@@ -72,10 +77,13 @@ export class CommentService {
         return await this.prisma.comment.update({
             where: { id },
             data: {
-                ...body
+                userId: body.userId,
+                roomId: body.roomId,
+                commentText: body.content,
             },
         });
     }
+
 
     public async deleteComment(id: string) {
         const commentToDelete = await this.prisma.comment.findUnique({

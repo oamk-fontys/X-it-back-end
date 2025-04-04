@@ -66,7 +66,7 @@ export class CommentController {
         description: 'Delete a comment',
         type: CommentDto,
     })
-    @IsAuthenticated([Role.ADMIN])
+    @IsAuthenticated([Role.USER, Role.ADMIN])
     async deleteComment(@Param('id') id: string) {
         return this.commentService.deleteComment(id);
     }
