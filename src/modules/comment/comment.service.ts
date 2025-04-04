@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/core/database/prisma.service";
 import { CreateEditCommentDto } from "./dto/create-edit-comment.dto";
-import { CommentType } from "@prisma/client";
 
 @Injectable()
 export class CommentService {
@@ -56,13 +55,14 @@ export class CommentService {
             data: {
                 userId: body.userId,
                 roomId: body.roomId,
-                commentText: body.commentText,
-                commentType: body.commentType || CommentType.WITHOUT_SPOILER,
+                commentText: body.commentText || '',
+                isSpoiler: !!body.isSpoiler,
             },
         });
 
         return newComment;
     }
+
 
 
     public async updateComment(id: string, body: CreateEditCommentDto) {
