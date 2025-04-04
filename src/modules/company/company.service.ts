@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/core/database/prisma.service';
 import { CreateEditCompanyDto } from './dto/create-edit-company.dto';
-import { defaultCompanySelect } from './select/company.select';
 
 @Injectable()
 export class CompanyService {
@@ -9,14 +8,18 @@ export class CompanyService {
 
   public async getCompanies() {
     return await this.prisma.company.findMany({
-      select: defaultCompanySelect,
+      include: {
+        logo: true,
+      },
     });
   }
 
   public async getCompanyById(id: string) {
     const company = await this.prisma.company.findUnique({
       where: { id },
-      select: defaultCompanySelect,
+      include: {
+        logo: true,
+      },
     });
 
     if (!company) {
@@ -39,6 +42,9 @@ export class CompanyService {
     const newCompany = await this.prisma.company.create({
       data: {
         ...body,
+      },
+      include: {
+        logo: true,
       },
     });
 
@@ -67,6 +73,9 @@ export class CompanyService {
       where: { id },
       data: {
         ...body,
+      },
+      include: {
+        logo: true,
       },
     });
   }
