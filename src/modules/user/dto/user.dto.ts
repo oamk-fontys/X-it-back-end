@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
-import { IsDate, IsEnum } from 'class-validator';
+import { IsDate } from 'class-validator';
 import { CompanyDto } from 'src/modules/company/dto/company.dto';
 import { MinimalUserDto } from './minimal-user.dto';
 
@@ -14,15 +13,6 @@ export class UserDto extends MinimalUserDto {
   })
   @IsDate()
   dateOfBirth: Date;
-
-  @Expose()
-  @ApiProperty({
-    description: 'The role of the user',
-    enum: Role,
-    example: Role.USER,
-  })
-  @IsEnum(Role)
-  role: Role;
 
   @Expose()
   @ApiProperty({
