@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/core/database/prisma.service";
 import { CreateEditCommentDto } from "./dto/create-edit-comment.dto";
+import { CommentType } from "@prisma/client";
 
 @Injectable()
 export class CommentService {
@@ -35,6 +36,7 @@ export class CommentService {
                 throw new NotFoundException('User not found');
             }
         }
+
         if (body.roomId) {
             const room = await this.prisma.room.findUnique({
                 where: { id: body.roomId },
@@ -44,15 +46,19 @@ export class CommentService {
                 throw new NotFoundException('Room not found');
             }
         }
+
         const newComment = await this.prisma.comment.create({
             data: {
-                ...body,
-                commentText: body.content
+                userId: body.userId,
+                roomId: body.roomId,
+                commentText: body.content,
+                CommentType: body.commentType || CommentType.WITHOUT_SPOILER,
             },
         });
 
         return newComment;
     }
+
 
     public async updateComment(id: string, body: CreateEditCommentDto) {
         const commentToUpdate = await this.prisma.comment.findUnique({

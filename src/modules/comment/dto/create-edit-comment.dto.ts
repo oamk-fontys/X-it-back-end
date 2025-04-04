@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
-import { IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty } from 'class-validator';
+import { CommentType } from '@prisma/client';
 
-Exclude()
+@Exclude()
 export class CreateEditCommentDto {
     @Expose()
     @IsNotEmpty()
@@ -30,4 +31,13 @@ export class CreateEditCommentDto {
         type: String,
     })
     roomId: string;
+
+    @Expose()
+    @IsEnum(CommentType)
+    @ApiProperty({
+        description: 'Specifies whether the comment contains spoilers or not',
+        example: 'WITH_SPOILER',
+        enum: CommentType,
+    })
+    commentType: CommentType;
 }
