@@ -42,7 +42,7 @@ export class TimeSlotDto {
 
   @Expose()
   @ApiProperty({
-    description: 'The booking of the time slot',
+    description: 'The availability of the time slot',
     type: Boolean,
   })
   isAvailable: boolean;
