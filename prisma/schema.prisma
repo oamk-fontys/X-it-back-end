@@ -37,6 +37,11 @@ enum BookingState {
   BLOCKED
 }
 
+enum CommentType {
+  WITH_SPOILER
+  WITHOUT_SPOILER
+}
+
 model User {
   id               String    @id @default(uuid())
   email            String    @unique
@@ -181,12 +186,13 @@ model File {
 }
 
 model Comment {
-  id          String   @id @default(uuid())
+  id          String      @id @default(uuid())
   userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
   roomId      String
-  room        Room     @relation(fields: [roomId], references: [id])
+  room        Room        @relation(fields: [roomId], references: [id])
   commentText String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  CommentType CommentType @default(WITHOUT_SPOILER)
 }

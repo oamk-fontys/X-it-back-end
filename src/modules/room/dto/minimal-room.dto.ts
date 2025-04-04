@@ -8,9 +8,9 @@ export class MinimalRoomDto {
   @ApiProperty({
     description: 'room id',
     example: '617949f8-0c4e-4bb8-b13b-c24fd5175f3b',
-    type: Number,
+    type: String,
   })
-  id: number;
+  id: string;
 
   @Expose()
   @IsNotEmpty()
