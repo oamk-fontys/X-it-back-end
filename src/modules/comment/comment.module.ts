@@ -7,4 +7,4 @@ import { CommentService } from './comment.service';
     controllers: [CommentController],
     providers: [CommentService, PrismaService],
 })
-export class CompanyModule { }
+export class CommentModule { }
