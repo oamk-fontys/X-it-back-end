@@ -1,101 +1,102 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaService } from "src/core/database/prisma.service";
-import { CreateEditCommentDto } from "./dto/create-edit-comment.dto";
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { PrismaService } from 'src/core/database/prisma.service';
+import { CreateCommentDto } from './dto/create-comment.dto';
+import { EditCommentDto } from './dto/edit-comment.dto';
 
 @Injectable()
 export class CommentService {
+  constructor(private readonly prisma: PrismaService) {}
 
-    constructor(private readonly prisma: PrismaService) { }
+  public async getComments(roomId: string, isSpoiler: boolean) {
+    return await this.prisma.comment.findMany({
+      where: {
+        roomId,
+        isSpoiler,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        user: true,
+      },
+    });
+  }
 
+  public async getCommentById(id: string) {
+    const comment = await this.prisma.comment.findUnique({
+      where: { id },
+    });
 
-
-    public async getComments() {
-        return await this.prisma.comment.findMany({
-            orderBy: {
-                createdAt: 'desc',
-            },
-        });
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
     }
 
+    return comment;
+  }
 
-    public async getCommentById(id: string) {
-        const comment = await this.prisma.comment.findUnique({
-            where: { id },
-        });
+  public async createComment(body: CreateCommentDto, userId: string) {
+    const room = await this.prisma.room.findUnique({
+      where: { id: body.roomId },
+    });
 
-        if (!comment) {
-            throw new NotFoundException('Comment not found');
-        }
-
-        return comment;
+    if (!room) {
+      throw new NotFoundException('Room not found');
     }
 
-    public async createComment(body: CreateEditCommentDto) {
-        if (body.userId) {
-            const user = await this.prisma.user.findUnique({
-                where: { id: body.userId },
-            });
+    const newComment = await this.prisma.comment.create({
+      data: {
+        ...body,
+        userId,
+      },
+    });
 
-            if (!user) {
-                throw new NotFoundException('User not found');
-            }
-        }
+    return newComment;
+  }
 
-        if (body.roomId) {
-            const room = await this.prisma.room.findUnique({
-                where: { id: body.roomId },
-            });
+  public async updateComment(id: string, body: EditCommentDto, userId: string) {
+    const comment = await this.prisma.comment.findUnique({
+      where: { id },
+    });
 
-            if (!room) {
-                throw new NotFoundException('Room not found');
-            }
-        }
-
-        const newComment = await this.prisma.comment.create({
-            data: {
-                userId: body.userId,
-                roomId: body.roomId,
-                commentText: body.commentText || '',
-                isSpoiler: !!body.isSpoiler,
-            },
-        });
-
-        return newComment;
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
     }
 
-
-
-    public async updateComment(id: string, body: CreateEditCommentDto) {
-        const commentToUpdate = await this.prisma.comment.findUnique({
-            where: { id },
-        });
-
-        if (!commentToUpdate) {
-            throw new NotFoundException('Comment not found');
-        }
-
-        return await this.prisma.comment.update({
-            where: { id },
-            data: {
-                userId: body.userId,
-                roomId: body.roomId,
-                commentText: body.commentText,
-            },
-        });
+    if (comment.userId !== userId) {
+      throw new ForbiddenException(
+        'You are not allowed to update this comment',
+      );
     }
 
+    return await this.prisma.comment.update({
+      where: { id },
+      data: {
+        ...body,
+      },
+    });
+  }
 
-    public async deleteComment(id: string) {
-        const commentToDelete = await this.prisma.comment.findUnique({
-            where: { id },
-        });
+  public async deleteComment(id: string, userId: string) {
+    const comment = await this.prisma.comment.findUnique({
+      where: { id },
+    });
 
-        if (!commentToDelete) {
-            throw new NotFoundException('Comment not found');
-        }
-
-        return await this.prisma.comment.delete({
-            where: { id },
-        });
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
     }
+
+    if (comment.userId !== userId) {
+      throw new ForbiddenException(
+        'You are not allowed to delete this comment',
+      );
+    }
+
+    return await this.prisma.comment.delete({
+      where: { id },
+    });
+  }
 }
