@@ -8,7 +8,7 @@ import {
   Put,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { ApiOkResponse, ApiParam } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { IsAuthenticated } from 'src/core/auth/auth.decorator';
 import { ResponseInterceptor } from 'src/core/interceptor/response.interceptor';
@@ -20,7 +20,7 @@ import { RoomService } from './room.service';
 
 @Controller('room')
 export class RoomController {
-  constructor(private readonly roomService: RoomService) {}
+  constructor(private readonly roomService: RoomService) { }
 
   @Get()
   @ApiOkResponse({
@@ -103,5 +103,23 @@ export class RoomController {
   @IsAuthenticated([Role.COMPANY, Role.ADMIN])
   async deleteRoom(@Param('id') id: string) {
     return this.roomService.deleteRoom(id);
+  }
+
+  // New Method: Get visited rooms
+  @Get('visited/:userId')
+  @ApiOkResponse({
+    description: 'Get all rooms visited by a user',
+    type: RoomDto,
+    isArray: true,
+  })
+  @ApiParam({
+    name: 'userId',
+    description: 'The ID of the user whose visited rooms are to be fetched',
+    required: true,
+    type: String,
+    example: '1234abcd-56ef-78gh-90ij-klmn123456op',
+  })
+  async getVisitedRooms(@Param('userId') userId: string) {
+    return this.roomService.getVisitedRooms(userId);
   }
 }

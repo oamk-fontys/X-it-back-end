@@ -123,18 +123,18 @@ export class RoomService {
   }
 
   public async getVisitedRooms(userId: string) {
-
-    const bookings = await this.prisma.booking.findMany({
+    const visitedRooms = await this.prisma.room.findMany({
       where: {
-        userId,
-      },
-      include: {
-        room: true,
+        booking: {
+          some: {
+            userId: userId,
+          },
+        },
       },
     });
 
-
-    return bookings;
+    return visitedRooms;
   }
+
 
 }
