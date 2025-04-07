@@ -61,4 +61,11 @@ export class MinimalUserDto {
   })
   @IsEnum(Role)
   role: Role;
+
+  @Expose()
+  @ApiProperty({
+    description: 'id of the company the user belongs to',
+    type: String,
+  })
+  companyId: string;
 }
