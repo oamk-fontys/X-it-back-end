@@ -4,7 +4,7 @@ import { CreateEditRoomDto } from './dto/create-edit-room.dto';
 
 @Injectable()
 export class RoomService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   public async getRooms() {
     return await this.prisma.room.findMany({
@@ -121,4 +121,20 @@ export class RoomService {
     });
     return count > 0;
   }
+
+  public async getVisitedRooms(userId: string) {
+
+    const bookings = await this.prisma.booking.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        room: true,
+      },
+    });
+
+
+    return bookings;
+  }
+
 }
