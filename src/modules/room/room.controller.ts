@@ -105,21 +105,4 @@ export class RoomController {
     return this.roomService.deleteRoom(id);
   }
 
-  // New Method: Get visited rooms
-  @Get('visited/:userId')
-  @ApiOkResponse({
-    description: 'Get all rooms visited by a user',
-    type: RoomDto,
-    isArray: true,
-  })
-  @ApiParam({
-    name: 'userId',
-    description: 'The ID of the user whose visited rooms are to be fetched',
-    required: true,
-    type: String,
-    example: '1234abcd-56ef-78gh-90ij-klmn123456op',
-  })
-  async getVisitedRooms(@Param('userId') userId: string) {
-    return this.roomService.getVisitedRooms(userId);
-  }
 }
