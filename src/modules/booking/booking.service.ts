@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { BookingState, Role } from '@prisma/client';
 import { PrismaService } from 'src/core/database/prisma.service';
 import { RoomService } from '../room/room.service';
@@ -17,7 +18,70 @@ export class BookingService {
     private readonly prisma: PrismaService,
     private readonly roomService: RoomService,
     private readonly timeSlotService: TimeSlotService,
+    private readonly jwtService: JwtService,
   ) {}
+
+  public async generateQr(userId: string, bookingId: string) {
+    const booking = await this.prisma.booking.findFirst({
+      where: {
+        id: bookingId,
+      },
+      include: {
+        timeSlot: true,
+      },
+    });
+
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+
+    if (booking.userId !== userId) {
+      throw new ForbiddenException(
+        "You're not the owner of this booking, you can't generate a QR code for it",
+      );
+    }
+
+    const date = new Date(booking.date);
+    const today = new Date();
+
+    const isToday = date.toDateString() === today.toDateString();
+
+    if (!isToday) {
+      throw new BadRequestException('Booking is not today');
+    }
+
+    // Check if current time is within 15 minutes of booking time slot
+    const [hours, minutes] = booking.timeSlot.start.split(':');
+    const bookingTime = new Date(date);
+    bookingTime.setHours(parseInt(hours), parseInt(minutes));
+
+    const timeDiff = today.getTime() - bookingTime.getTime();
+    const minutesDiff = Math.floor(timeDiff / 1000 / 60);
+
+    console.log(minutesDiff);
+
+    // Allow scanning 15 minutes before and up to 60 minutes after booking time
+    if (minutesDiff < -15 || minutesDiff > 15) {
+      throw new BadRequestException(
+        'QR code can only be generated between 15 minutes before and 15 minutes after booking time',
+      );
+    }
+
+    // Generate a booking token with limited validity
+    const token = await this.jwtService.signAsync(
+      {
+        userId,
+        bookingId,
+      },
+      {
+        expiresIn: '15m', // Token expires in 15 minutes
+      },
+    );
+
+    return {
+      token,
+    };
+  }
 
   public async getAllBookings() {
     return await this.prisma.booking.findMany({

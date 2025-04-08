@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Req,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
@@ -16,9 +17,12 @@ import { RequestWithUser } from 'src/core/auth/auth.guard';
 import { ResponseInterceptor } from 'src/core/interceptor/response.interceptor';
 import { MinimalRoomDto } from 'src/modules/room/dto/minimal-room.dto';
 import { MinimalUserDto } from 'src/modules/user/dto/minimal-user.dto';
+import { BookingGuard, RequestWithQRCode } from './booking.guard';
 import { BookingService } from './booking.service';
+import { BookingQrCodeDto } from './dto/booking-qr-code.dto';
 import { BookingDto } from './dto/booking.dto';
 import { CreateEditBookingDto } from './dto/create-edit-booking.dto';
+import { ValidateBookingDto } from './dto/validate-booking.dto';
 
 @Controller('booking')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -93,6 +97,34 @@ export class BookingController {
     @Body() booking: CreateEditBookingDto,
   ) {
     return this.bookingService.createBooking(booking, req.user.id);
+  }
+
+  @Post('validate')
+  @ApiOkResponse({
+    description: 'validate a booking',
+    type: BookingQrCodeDto,
+  })
+  @UseGuards(BookingGuard)
+  @UseInterceptors(new ResponseInterceptor(BookingQrCodeDto))
+  async validateBooking(
+    @Req() req: RequestWithQRCode,
+    @Body() body: ValidateBookingDto,
+  ) {
+    return req.qr;
+  }
+
+  @Post('generate-qr/:bookingId')
+  @ApiOkResponse({
+    description: 'validate a booking',
+    type: ValidateBookingDto,
+  })
+  @IsAuthenticated()
+  @UseInterceptors(new ResponseInterceptor(ValidateBookingDto))
+  async generateQr(
+    @Req() req: RequestWithUser,
+    @Param('bookingId') bookingId: string,
+  ) {
+    return this.bookingService.generateQr(req.user.id, bookingId);
   }
 
   @Put(':id')
