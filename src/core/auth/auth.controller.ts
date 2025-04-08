@@ -10,6 +10,10 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signin')
+  @ApiOkResponse({
+    description: 'Sign in',
+    type: AccessCodeDto,
+  })
   async signIn(@Body() body: SignInDto) {
     return this.authService.signIn(body);
   }
