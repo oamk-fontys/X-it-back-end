@@ -17,6 +17,12 @@ export class TimeSlotService {
     const timeSlots = await this.prisma.timeSlot.findMany({
       where: {
         roomId,
+        ...(date && {
+          day: this.getDayOfWeek(date),
+        }),
+      },
+      orderBy: {
+        start: 'asc',
       },
       include: {
         room: true,
@@ -256,5 +262,18 @@ export class TimeSlotService {
         );
       }
     }
+  }
+
+  private getDayOfWeek(date: Date): WeekDay {
+    const days = [
+      WeekDay.SUNDAY,
+      WeekDay.MONDAY,
+      WeekDay.TUESDAY,
+      WeekDay.WEDNESDAY,
+      WeekDay.THURSDAY,
+      WeekDay.FRIDAY,
+      WeekDay.SATURDAY,
+    ];
+    return days[date.getDay()];
   }
 }
