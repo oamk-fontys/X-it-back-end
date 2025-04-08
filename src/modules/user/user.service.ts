@@ -34,6 +34,16 @@ export class UserService {
       data: {
         ...userData,
         password: await hash(body.password, 10),
+        ...(body.company && {
+          company: {
+            create: {
+              ...body.company,
+              ...(body.company.logoId
+                ? { logoId: body.company.logoId }
+                : { logoId: null }),
+            },
+          },
+        }),
       },
     });
 

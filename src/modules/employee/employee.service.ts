@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Role } from '@prisma/client';
 import { PrismaService } from 'src/core/database/prisma.service';
 import { AddEmployeeDto } from './dto/add-employee.dto';
 
@@ -44,7 +45,7 @@ export class EmployeeService {
 
     await this.prisma.user.update({
       where: { id: body.userId },
-      data: { companyId },
+      data: { companyId, role: Role.COMPANY },
     });
   }
 
@@ -63,7 +64,7 @@ export class EmployeeService {
 
     await this.prisma.user.update({
       where: { id },
-      data: { companyId: null },
+      data: { companyId: null, role: Role.USER },
     });
   }
 }
