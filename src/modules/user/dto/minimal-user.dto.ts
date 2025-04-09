@@ -1,7 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
-import { IsEmail, IsEnum, IsPhoneNumber, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsEmail,
+  IsEnum,
+  IsPhoneNumber,
+  IsString,
+} from 'class-validator';
+import { FileDto } from 'src/modules/file/dto/file.dto';
 
 @Exclude()
 export class MinimalUserDto {
@@ -47,6 +54,13 @@ export class MinimalUserDto {
 
   @Expose()
   @ApiProperty({
+    description: 'The profile picture of the user',
+    type: FileDto,
+  })
+  profilePicture: FileDto;
+
+  @Expose()
+  @ApiProperty({
     description: 'The phone number of the user',
     example: '+1234567890',
   })
@@ -61,6 +75,14 @@ export class MinimalUserDto {
   })
   @IsEnum(Role)
   role: Role;
+
+  @Expose()
+  @ApiProperty({
+    description: 'The date of birth of the user',
+    example: '1990-01-01',
+  })
+  @IsDate()
+  dateOfBirth: Date;
 
   @Expose()
   @ApiProperty({
