@@ -29,13 +29,13 @@ import { ValidateBookingDto } from './dto/validate-booking.dto';
 export class BookingController {
   constructor(private readonly bookingService: BookingService) { }
 
-  @Get()
+  @Get('admin')
   @ApiOkResponse({
-    description: 'Get all bookings for users and admins',
+    description: 'Get all bookings for admins',
     type: BookingDto,
     isArray: true,
   })
-  @IsAuthenticated([Role.ADMIN, Role.USER])
+  @IsAuthenticated([Role.ADMIN])
   @UseInterceptors(
     new ResponseInterceptor(BookingDto, {
       user: MinimalUserDto,
@@ -43,30 +43,24 @@ export class BookingController {
     }),
   )
   async getAllBookings(@Req() req: RequestWithUser) {
-    if (req.user.role === Role.ADMIN) {
-      return this.bookingService.getAllBookings();
-    } else if (req.user.role === Role.USER) {
-      return this.bookingService.getAllBookingsByUserId(req.user.id);
-    }
+    return this.bookingService.getAllBookings();
   }
 
-  @Get()
+  @Get('user')
   @ApiOkResponse({
-    description: 'Get all bookings for company',
+    description: 'Get all bookings for user',
     type: BookingDto,
     isArray: true,
   })
-  @IsAuthenticated([Role.COMPANY])
+  @IsAuthenticated([Role.USER])
   @UseInterceptors(
     new ResponseInterceptor(BookingDto, {
       user: MinimalUserDto,
       room: MinimalRoomDto,
     }),
   )
-  async getAllBookingsCompanyId(@Req() req: RequestWithUser) {
-    if (req.user.role === Role.COMPANY) {
-      return this.bookingService.getAllBookingsCompanyId(req.user.companyId);
-    }
+  async getAllBookingsByUserId(@Req() req: RequestWithUser) {
+    return this.bookingService.getAllBookingsByUserId(req.user.id);
   }
 
   @Get(':id')
