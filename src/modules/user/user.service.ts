@@ -11,14 +11,18 @@ export class UserService {
 
   public async getUsers() {
     return this.prisma.user.findMany({
-      select: defaultUserSelect,
+      include: {
+        profilePicture: true,
+      },
     });
   }
 
   public async getUserById(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
-      select: defaultUserSelect,
+      include: {
+        profilePicture: true,
+      },
     });
 
     if (!user) {
@@ -80,6 +84,9 @@ export class UserService {
   public async getUserByEmail(email: string) {
     return await this.prisma.user.findUnique({
       where: { email },
+      include: {
+        profilePicture: true,
+      },
     });
   }
 
