@@ -58,8 +58,6 @@ export class BookingService {
     const timeDiff = today.getTime() - bookingTime.getTime();
     const minutesDiff = Math.floor(timeDiff / 1000 / 60);
 
-    console.log(minutesDiff);
-
     // Allow scanning 15 minutes before and up to 60 minutes after booking time
     if (minutesDiff < -15 || minutesDiff > 15) {
       throw new BadRequestException(
