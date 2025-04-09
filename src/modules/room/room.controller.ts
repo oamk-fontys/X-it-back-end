@@ -6,11 +6,13 @@ import {
   Param,
   Post,
   Put,
+  Req,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { IsAuthenticated } from 'src/core/auth/auth.decorator';
+import { RequestWithUser } from 'src/core/auth/auth.guard';
 import { ResponseInterceptor } from 'src/core/interceptor/response.interceptor';
 import { CompanyDto } from '../company/dto/company.dto';
 import { FileDto } from '../file/dto/file.dto';
@@ -38,6 +40,25 @@ export class RoomController {
   )
   async getRooms() {
     return this.roomService.getRooms();
+  }
+
+  @Get('visited-rooms')
+  @ApiOkResponse({
+    description: 'Get all visited escape rooms for the logged-in user',
+    type: RoomDto,
+    isArray: true,
+  })
+  @UseInterceptors(
+    new ResponseInterceptor(RoomDto, {
+      company: {
+        type: CompanyDto,
+        logo: FileDto,
+      },
+    }),
+  )
+  @IsAuthenticated([Role.USER, Role.ADMIN])
+  async getVisitedRooms(@Req() req: RequestWithUser) {
+    return this.roomService.getVisitedRooms(req.user.id);
   }
 
   @Get(':id')
