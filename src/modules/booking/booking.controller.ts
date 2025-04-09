@@ -27,7 +27,7 @@ import { ValidateBookingDto } from './dto/validate-booking.dto';
 @Controller('booking')
 @UseInterceptors(ClassSerializerInterceptor)
 export class BookingController {
-  constructor(private readonly bookingService: BookingService) {}
+  constructor(private readonly bookingService: BookingService) { }
 
   @Get()
   @ApiOkResponse({
@@ -47,6 +47,25 @@ export class BookingController {
       return this.bookingService.getAllBookings();
     } else if (req.user.role === Role.USER) {
       return this.bookingService.getAllBookingsByUserId(req.user.id);
+    }
+  }
+
+  @Get()
+  @ApiOkResponse({
+    description: 'Get all bookings for company',
+    type: BookingDto,
+    isArray: true,
+  })
+  @IsAuthenticated([Role.COMPANY])
+  @UseInterceptors(
+    new ResponseInterceptor(BookingDto, {
+      user: MinimalUserDto,
+      room: MinimalRoomDto,
+    }),
+  )
+  async getAllBookingsCompanyId(@Req() req: RequestWithUser) {
+    if (req.user.role === Role.COMPANY) {
+      return this.bookingService.getAllBookingsCompanyId(req.user.companyId);
     }
   }
 
