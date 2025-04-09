@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 @Exclude()
 export class CreateEditCompanyDto {
@@ -77,10 +77,11 @@ export class CreateEditCompanyDto {
   verified: boolean;
 
   @Expose()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'The file id of the company logo',
     type: String,
+    nullable: true,
   })
   logoId: string;
 }

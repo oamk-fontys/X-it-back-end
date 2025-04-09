@@ -1,7 +1,14 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Exclude, Expose } from "class-transformer";
-import { IsDateString, IsPhoneNumber, IsString } from "class-validator";
-import { SignInDto } from "./sign-in.dto";
+import { ApiProperty } from '@nestjs/swagger';
+import { Exclude, Expose, Type } from 'class-transformer';
+import {
+  IsDateString,
+  IsOptional,
+  IsPhoneNumber,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { CreateEditCompanyDto } from 'src/modules/company/dto/create-edit-company.dto';
+import { SignInDto } from './sign-in.dto';
 
 @Exclude()
 export class RegisterDto extends SignInDto {
@@ -52,4 +59,15 @@ export class RegisterDto extends SignInDto {
     example: '2017-06-07T14:34:08.700Z',
   })
   dateOfBirth: Date;
+
+  @Expose()
+  @IsOptional()
+  @ValidateNested()
+  @ApiProperty({
+    description: 'The company of the user (Optional)',
+    type: CreateEditCompanyDto,
+    nullable: true,
+  })
+  @Type(() => CreateEditCompanyDto)
+  company: CreateEditCompanyDto;
 }

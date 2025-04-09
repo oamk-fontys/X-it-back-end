@@ -30,14 +30,21 @@ export class UserService {
 
   public async createUser(body: RegisterDto) {
     const { confirmPassword, ...userData } = body;
-    const user = await this.prisma.user.create({
+
+    return this.prisma.user.create({
       data: {
         ...userData,
         password: await hash(body.password, 10),
+        company: body.company
+          ? {
+              create: {
+                ...body.company,
+                logoId: body.company.logoId ?? null,
+              },
+            }
+          : undefined,
       },
     });
-
-    return user;
   }
 
   public async updateUser(id: string, user: CreateEditUserDto) {

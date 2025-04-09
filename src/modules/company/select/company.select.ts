@@ -9,7 +9,7 @@ export const defaultCompanySelect = {
   createdAt: true,
   updatedAt: true,
   booking: true,
-  user: true,
+  users: true,
   postalCode: true,
   city: true,
   vat: true,
