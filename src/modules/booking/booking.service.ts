@@ -19,7 +19,7 @@ export class BookingService {
     private readonly roomService: RoomService,
     private readonly timeSlotService: TimeSlotService,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   public async generateQr(userId: string, bookingId: string) {
     const booking = await this.prisma.booking.findFirst({
@@ -85,18 +85,6 @@ export class BookingService {
 
   public async getAllBookings() {
     return await this.prisma.booking.findMany({
-      include: {
-        room: true,
-        user: true,
-      },
-    });
-  }
-
-  public async getAllBookingsCompanyId(companyId: string) {
-    return await this.prisma.booking.findMany({
-      where: {
-        companyId: companyId,
-      },
       include: {
         room: true,
         user: true,
