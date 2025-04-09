@@ -123,6 +123,8 @@ export class RoomService {
   }
 
   public async getVisitedRooms(userId: string) {
+    console.log(`Fetching visited rooms for userId: ${userId}`);
+
     const visitedRooms = await this.prisma.room.findMany({
       where: {
         booking: {
@@ -133,8 +135,23 @@ export class RoomService {
       },
     });
 
-    return visitedRooms;
+    console.log('Raw visited rooms data:', JSON.stringify(visitedRooms, null, 2));
+
+    // Filter unieke kamers op basis van id
+    const uniqueRooms = visitedRooms.filter(
+      (room, index, self) =>
+        index === self.findIndex((r) => r.id === room.id)
+    );
+
+    console.log('Unique rooms after filtering:', JSON.stringify(uniqueRooms, null, 2));
+    if (!uniqueRooms || uniqueRooms.length === 0) {
+      throw new NotFoundException('No visited rooms found for the logged-in user');
+    }
+
+    return uniqueRooms;
   }
+
+
 
 
 }

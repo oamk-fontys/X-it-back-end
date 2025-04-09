@@ -6,6 +6,8 @@ import {
   Param,
   Post,
   Put,
+  Req,
+  UnauthorizedException,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiParam } from '@nestjs/swagger';
@@ -17,6 +19,7 @@ import { FileDto } from '../file/dto/file.dto';
 import { CreateEditRoomDto } from './dto/create-edit-room.dto';
 import { RoomDto } from './dto/room.dto';
 import { RoomService } from './room.service';
+import { RequestWithUser } from 'src/core/auth/auth.guard';
 
 @Controller('room')
 export class RoomController {
@@ -39,6 +42,26 @@ export class RoomController {
   async getRooms() {
     return this.roomService.getRooms();
   }
+
+  @Get('visited-rooms')
+  @ApiOkResponse({
+    description: 'Get all visited escape rooms for the logged-in user',
+    type: RoomDto,
+    isArray: true,
+  })
+  @UseInterceptors(
+    new ResponseInterceptor(RoomDto, {
+      company: {
+        type: CompanyDto,
+        logo: FileDto,
+      },
+    }),
+  )
+  @IsAuthenticated([Role.USER, Role.ADMIN])
+  async getVisitedRooms(@Req() req: RequestWithUser) {
+    return this.roomService.getVisitedRooms(req.user.id);
+  }
+
 
   @Get(':id')
   @ApiOkResponse({
@@ -104,5 +127,8 @@ export class RoomController {
   async deleteRoom(@Param('id') id: string) {
     return this.roomService.deleteRoom(id);
   }
+
+
+
 
 }
