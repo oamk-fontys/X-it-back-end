@@ -64,7 +64,7 @@ export class RegisterDto extends SignInDto {
   @IsOptional()
   @ValidateNested()
   @ApiProperty({
-    description: 'The company of the user',
+    description: 'The company of the user (Optional)',
     type: CreateEditCompanyDto,
     nullable: true,
   })
