@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { PrismaClient, WeekDay } from '@prisma/client';
+import { Difficulty, PrismaClient, WeekDay } from '@prisma/client';
 import { hash } from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -107,6 +107,12 @@ async function main() {
                 companyId: company.id,
                 duration: duration,
                 cleanUpTime: 15, // Fixed 15 minutes cleanup time for all rooms
+                address: faker.location.streetAddress(),
+                city: faker.location.city(),
+                postalCode: faker.location.zipCode(),
+                country: faker.location.country(),
+                phoneNumber: faker.phone.number(),
+                difficulty: faker.helpers.enumValue(Difficulty),
               },
             });
           }),

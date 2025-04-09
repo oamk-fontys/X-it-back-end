@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Difficulty } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsPhoneNumber } from 'class-validator';
 
 @Exclude()
 export class CreateEditRoomDto {
@@ -48,4 +49,59 @@ export class CreateEditRoomDto {
     type: Number,
   })
   cleanUpTime: number;
+
+  @Expose()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The difficulty of the room',
+    example: Difficulty.EASY,
+    enum: Difficulty,
+  })
+  difficulty: Difficulty;
+
+  @Expose()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The address of the room',
+    example: '123 Main St',
+    type: String,
+  })
+  address: string;
+
+  @Expose()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The city of the room',
+    example: 'New York',
+    type: String,
+  })
+  city: string;
+
+  @Expose()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The postal code of the room',
+    example: '6001 RA',
+    type: String,
+  })
+  postalCode: string;
+
+  @Expose()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The country of the room',
+    example: 'United States',
+    type: String,
+  })
+  country: string;
+
+  @Expose()
+  @IsNotEmpty()
+  @IsPhoneNumber()
+  @ApiProperty({
+    description: 'The phone number of the room',
+    example: '+31 6 12345678',
+    type: String,
+  })
+  phoneNumber: string;
 }
