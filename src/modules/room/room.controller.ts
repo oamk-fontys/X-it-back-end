@@ -7,23 +7,22 @@ import {
   Post,
   Put,
   Req,
-  UnauthorizedException,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiParam } from '@nestjs/swagger';
+import { ApiOkResponse } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { IsAuthenticated } from 'src/core/auth/auth.decorator';
+import { RequestWithUser } from 'src/core/auth/auth.guard';
 import { ResponseInterceptor } from 'src/core/interceptor/response.interceptor';
 import { CompanyDto } from '../company/dto/company.dto';
 import { FileDto } from '../file/dto/file.dto';
 import { CreateEditRoomDto } from './dto/create-edit-room.dto';
 import { RoomDto } from './dto/room.dto';
 import { RoomService } from './room.service';
-import { RequestWithUser } from 'src/core/auth/auth.guard';
 
 @Controller('room')
 export class RoomController {
-  constructor(private readonly roomService: RoomService) { }
+  constructor(private readonly roomService: RoomService) {}
 
   @Get()
   @ApiOkResponse({
@@ -61,7 +60,6 @@ export class RoomController {
   async getVisitedRooms(@Req() req: RequestWithUser) {
     return this.roomService.getVisitedRooms(req.user.id);
   }
-
 
   @Get(':id')
   @ApiOkResponse({
@@ -127,8 +125,4 @@ export class RoomController {
   async deleteRoom(@Param('id') id: string) {
     return this.roomService.deleteRoom(id);
   }
-
-
-
-
 }

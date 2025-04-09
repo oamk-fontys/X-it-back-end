@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { BookingState } from '@prisma/client';
 import { PrismaService } from 'src/core/database/prisma.service';
 import { CreateEditRoomDto } from './dto/create-edit-room.dto';
 
 @Injectable()
 export class RoomService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   public async getRooms() {
     return await this.prisma.room.findMany({
@@ -123,35 +124,23 @@ export class RoomService {
   }
 
   public async getVisitedRooms(userId: string) {
-    console.log(`Fetching visited rooms for userId: ${userId}`);
-
-    const visitedRooms = await this.prisma.room.findMany({
+    return await this.prisma.room.findMany({
       where: {
         booking: {
           some: {
-            userId: userId,
+            userId,
+            state: BookingState.DONE,
           },
         },
       },
+      include: {
+        company: {
+          include: {
+            logo: true,
+          },
+        },
+      },
+      distinct: ['id'],
     });
-
-    console.log('Raw visited rooms data:', JSON.stringify(visitedRooms, null, 2));
-
-    // Filter unieke kamers op basis van id
-    const uniqueRooms = visitedRooms.filter(
-      (room, index, self) =>
-        index === self.findIndex((r) => r.id === room.id)
-    );
-
-    console.log('Unique rooms after filtering:', JSON.stringify(uniqueRooms, null, 2));
-    if (!uniqueRooms || uniqueRooms.length === 0) {
-      throw new NotFoundException('No visited rooms found for the logged-in user');
-    }
-
-    return uniqueRooms;
   }
-
-
-
-
 }
