@@ -90,8 +90,8 @@ model Company {
   city        String
   vat         String
   postalCode  String
-  description String
-  ownerId     String?
+  phoneNumber String
+  description String?
   verified    Boolean
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
