@@ -18,6 +18,7 @@ async function main() {
             vat: faker.string.alphanumeric({ length: 10 }).toUpperCase(),
             postalCode: faker.location.zipCode(),
             description: faker.company.catchPhrase(),
+            phoneNumber: faker.phone.number(),
             verified: faker.datatype.boolean(),
           },
         });

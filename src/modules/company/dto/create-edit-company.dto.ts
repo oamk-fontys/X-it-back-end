@@ -77,6 +77,15 @@ export class CreateEditCompanyDto {
   verified: boolean;
 
   @Expose()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The phone number of the company',
+    example: '+31 6 12345678',
+    type: String,
+  })
+  phoneNumber: string;
+
+  @Expose()
   @IsOptional()
   @ApiProperty({
     description: 'The file id of the company logo',
