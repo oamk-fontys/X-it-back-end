@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Role } from '@prisma/client';
 import { Request } from 'express';
 import { UserDto } from 'src/modules/user/dto/user.dto';
+import { PrismaService } from '../database/prisma.service';
 import { ROLES_KEY } from './auth.decorator';
 import { jwtConstants } from './constants';
 
@@ -20,7 +21,8 @@ export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private reflector: Reflector,
-  ) { }
+    private prisma: PrismaService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Get required roles from decorator metadata
@@ -40,7 +42,21 @@ export class AuthGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });
-      request['user'] = payload;
+
+      const user = await this.prisma.user.findUnique({
+        where: { id: payload.id },
+        include: {
+          company: true,
+          profilePicture: true,
+        },
+      });
+
+      if (!user) {
+        throw new UnauthorizedException('Unauthorized, Unknown user');
+      }
+
+      request['user'] = user;
+      console.log(request['user']);
 
       // Check if user has required role
       if (requiredRoles.length !== 0 && !requiredRoles.includes(payload.role)) {
