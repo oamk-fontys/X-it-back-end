@@ -26,11 +26,14 @@ export class RatingService {
     }
 
     public async getRatingById(id: string) {
+        console.log('Fetching rating with id:', id); // Log de id die wordt opgehaald
         const rating = await this.prisma.rating.findUnique({
             where: { id },
         });
+        console.log('Result from database query:', rating); // Log het resultaat van de query
 
         if (!rating) {
+            console.log('No rating found for id:', id); // Log als er geen resultaat is
             throw new NotFoundException('Rating not found');
         }
 
@@ -38,7 +41,6 @@ export class RatingService {
     }
 
     public async getAllRatingsByUserId(userId: string) {
-        console.log('Begin fetching ratings for userId:', userId); // Log de userId
         const ratings = await this.prisma.rating.findMany({
             where: {
                 userId: userId,
@@ -48,7 +50,6 @@ export class RatingService {
                 user: true,
             },
         });
-        console.log('Ratings fetched from database:', ratings); // Log de resultaten van de query
         return ratings;
     }
 

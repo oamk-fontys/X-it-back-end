@@ -39,7 +39,7 @@ export class RatingController {
             room: MinimalRoomDto,
         }),
     )
-    async getComments(
+    async getRatings(
         @Param('roomId') roomId: string,
     ) {
         return this.ratingService.getRatings(roomId);
@@ -57,7 +57,8 @@ export class RatingController {
         }),
     )
     async getRatingById(@Param('id') id: string) {
-        return this.ratingService.getRatingById(id);
+        const rating = await this.ratingService.getRatingById(id);
+        return rating;
     }
 
     @Get('user')
@@ -74,9 +75,7 @@ export class RatingController {
         }),
     )
     async getAllRatingsByUserId(@Req() req: RequestWithUser) {
-        console.log('User info from request:', req.user); // Log de user-info
         const ratings = await this.ratingService.getAllRatingsByUserId(req.user.id);
-        console.log('Ratings returned to client:', ratings); // Log de ratings voordat ze worden geretourneerd
         return ratings;
     }
 
