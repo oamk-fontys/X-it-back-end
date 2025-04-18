@@ -58,6 +58,7 @@ model User {
   profilePicture   File?     @relation(fields: [profilePictureId], references: [id])
   profilePictureId String?
   Comment          Comment[]
+  ratings          ratings[]
 }
 
 // THIS IS NOT PART OF THE APPLICATION JUST AN EXAMPLE TO SHOW MODULES
@@ -110,6 +111,7 @@ model Room {
   booking     Booking[]
   game        Game[]
   Comment     Comment[]
+  ratings     ratings[]
 }
 
 model TimeSlot {
@@ -190,4 +192,15 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isSpoiler Boolean  @default(false)
+}
+
+model ratings {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id])
+  rating    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
