@@ -19,6 +19,12 @@ enum Role {
   COMPANY
 }
 
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
 enum WeekDay {
   MONDAY
   TUESDAY
@@ -85,8 +91,8 @@ model Company {
   city        String
   vat         String
   postalCode  String
-  description String
-  ownerId     String?
+  phoneNumber String
+  description String?
   verified    Boolean
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -108,6 +114,12 @@ model Room {
   timeSlot    TimeSlot[]
   duration    Int
   cleanUpTime Int
+  address     String
+  city        String
+  postalCode  String
+  country     String
+  difficulty  Difficulty @default(EASY)
+  phoneNumber String
   booking     Booking[]
   game        Game[]
   Comment     Comment[]

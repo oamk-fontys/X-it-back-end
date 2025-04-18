@@ -99,4 +99,20 @@ export class CommentService {
       where: { id },
     });
   }
+
+  public async getFeaturedComments() {
+    return await this.prisma.comment.findMany({
+      where: {
+        isSpoiler: false,
+      },
+      take: 10,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        user: true,
+        room: true,
+      },
+    });
+  }
 }

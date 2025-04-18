@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { BookingState } from '@prisma/client';
 import { PrismaService } from 'src/core/database/prisma.service';
 import { CreateEditRoomDto } from './dto/create-edit-room.dto';
 
@@ -120,5 +121,26 @@ export class RoomService {
       where: { id: roomId },
     });
     return count > 0;
+  }
+
+  public async getVisitedRooms(userId: string) {
+    return await this.prisma.room.findMany({
+      where: {
+        booking: {
+          some: {
+            userId,
+            state: BookingState.DONE,
+          },
+        },
+      },
+      include: {
+        company: {
+          include: {
+            logo: true,
+          },
+        },
+      },
+      distinct: ['id'],
+    });
   }
 }

@@ -16,6 +16,7 @@ import { Role } from '@prisma/client';
 import { IsAuthenticated } from 'src/core/auth/auth.decorator';
 import { RequestWithUser } from 'src/core/auth/auth.guard';
 import { ResponseInterceptor } from 'src/core/interceptor/response.interceptor';
+import { MinimalRoomDto } from '../room/dto/minimal-room.dto';
 import { MinimalUserDto } from '../user/dto/minimal-user.dto';
 import { CommentService } from './comment.service';
 import { CommentDto } from './dto/Comment.dto';
@@ -25,6 +26,22 @@ import { EditCommentDto } from './dto/edit-comment.dto';
 @Controller('comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
+
+  @Get()
+  @ApiOkResponse({
+    description: 'Get all comments',
+    type: CommentDto,
+    isArray: true,
+  })
+  @UseInterceptors(
+    new ResponseInterceptor(CommentDto, {
+      user: MinimalUserDto,
+      room: MinimalRoomDto,
+    }),
+  )
+  async getFeaturedComments() {
+    return this.commentService.getFeaturedComments();
+  }
 
   @Get(':roomId')
   @ApiOkResponse({
@@ -40,6 +57,7 @@ export class CommentController {
   @UseInterceptors(
     new ResponseInterceptor(CommentDto, {
       user: MinimalUserDto,
+      room: MinimalRoomDto,
     }),
   )
   async getComments(
@@ -54,6 +72,12 @@ export class CommentController {
     description: 'Get one comment by ID',
     type: CommentDto,
   })
+  @UseInterceptors(
+    new ResponseInterceptor(CommentDto, {
+      user: MinimalUserDto,
+      room: MinimalRoomDto,
+    }),
+  )
   async getCommentById(@Param('id') id: string) {
     return this.commentService.getCommentById(id);
   }
@@ -64,11 +88,16 @@ export class CommentController {
     type: CommentDto,
   })
   @IsAuthenticated([Role.USER, Role.ADMIN])
+  @UseInterceptors(
+    new ResponseInterceptor(CommentDto, {
+      user: MinimalUserDto,
+      room: MinimalRoomDto,
+    }),
+  )
   async createComment(
     @Body() body: CreateCommentDto,
     @Req() request: RequestWithUser,
   ) {
-    console.log(request.user.id);
     return this.commentService.createComment(body, request.user.id);
   }
 
@@ -78,6 +107,12 @@ export class CommentController {
     type: CommentDto,
   })
   @IsAuthenticated([Role.USER, Role.ADMIN])
+  @UseInterceptors(
+    new ResponseInterceptor(CommentDto, {
+      user: MinimalUserDto,
+      room: MinimalRoomDto,
+    }),
+  )
   async updateComment(
     @Param('id') id: string,
     @Body() body: EditCommentDto,
@@ -92,6 +127,12 @@ export class CommentController {
     type: CommentDto,
   })
   @IsAuthenticated([Role.USER, Role.ADMIN])
+  @UseInterceptors(
+    new ResponseInterceptor(CommentDto, {
+      user: MinimalUserDto,
+      room: MinimalRoomDto,
+    }),
+  )
   async deleteComment(
     @Param('id') id: string,
     @Req() request: RequestWithUser,

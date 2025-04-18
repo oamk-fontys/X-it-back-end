@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
+import { MinimalRoomDto } from 'src/modules/room/dto/minimal-room.dto';
 import { MinimalUserDto } from 'src/modules/user/dto/minimal-user.dto';
 
-Exclude();
+@Exclude()
 export class CommentDto {
   @Expose()
   @ApiProperty({
@@ -29,6 +30,14 @@ export class CommentDto {
     type: MinimalUserDto,
   })
   user: MinimalUserDto;
+
+  @Expose()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The user who made the comment',
+    type: MinimalRoomDto,
+  })
+  room: MinimalRoomDto;
 
   @Expose()
   @IsNotEmpty()

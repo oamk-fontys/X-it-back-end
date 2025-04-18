@@ -8,14 +8,6 @@ import { MinimalUserDto } from './minimal-user.dto';
 export class UserDto extends MinimalUserDto {
   @Expose()
   @ApiProperty({
-    description: 'The date of birth of the user',
-    example: '1990-01-01',
-  })
-  @IsDate()
-  dateOfBirth: Date;
-
-  @Expose()
-  @ApiProperty({
     description: 'The creation date of the user',
   })
   @IsDate()

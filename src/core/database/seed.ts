@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { PrismaClient, WeekDay } from '@prisma/client';
+import { Difficulty, PrismaClient, WeekDay } from '@prisma/client';
 import { hash } from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -18,6 +18,7 @@ async function main() {
             vat: faker.string.alphanumeric({ length: 10 }).toUpperCase(),
             postalCode: faker.location.zipCode(),
             description: faker.company.catchPhrase(),
+            phoneNumber: faker.phone.number(),
             verified: faker.datatype.boolean(),
           },
         });
@@ -107,6 +108,12 @@ async function main() {
                 companyId: company.id,
                 duration: duration,
                 cleanUpTime: 15, // Fixed 15 minutes cleanup time for all rooms
+                address: faker.location.streetAddress(),
+                city: faker.location.city(),
+                postalCode: faker.location.zipCode(),
+                country: faker.location.country(),
+                phoneNumber: faker.phone.number(),
+                difficulty: faker.helpers.enumValue(Difficulty),
               },
             });
           }),
@@ -242,6 +249,30 @@ async function main() {
     );
     */
 
+  // Create comments for each room
+  const comments = await Promise.all(
+    rooms.flat().flatMap(async (room) => {
+      // Create 3-5 comments per room
+      const numberOfComments = faker.number.int({ min: 3, max: 5 });
+      return Promise.all(
+        Array(numberOfComments)
+          .fill(null)
+          .map(async () => {
+            const randomUser =
+              regularUsers[Math.floor(Math.random() * regularUsers.length)];
+            return await prisma.comment.create({
+              data: {
+                userId: randomUser.id,
+                roomId: room.id,
+                content: faker.lorem.sentence(),
+                isSpoiler: faker.datatype.boolean(),
+              },
+            });
+          }),
+      );
+    }),
+  );
+
   console.log({
     companiesCount: companies.length,
     adminUsersCount: adminUsers.length,
@@ -250,6 +281,7 @@ async function main() {
     roomsCount: rooms.flat().length,
     timeSlotsCount: timeSlots.flat().flat().length,
     bookingsCount: bookings.length,
+    commentsCount: comments.flat().length,
     //gamesCount: games.length,
     //playersCount: players.flat().length,
   });
