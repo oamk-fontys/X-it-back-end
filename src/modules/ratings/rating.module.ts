@@ -7,4 +7,4 @@ import { RatingService } from './rating.service';
     controllers: [RatingController],
     providers: [RatingService, PrismaService],
 })
-export class CommentModule { }
+export class RatingModule { }

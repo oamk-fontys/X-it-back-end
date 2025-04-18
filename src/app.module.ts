@@ -13,6 +13,7 @@ import { PlayerModule } from './modules/player/player.module';
 import { RoomModule } from './modules/room/room.module';
 import { TimeSlotModule } from './modules/time-slot/time-slot.module';
 import { UserModule } from './modules/user/user.module';
+import { RatingModule } from './modules/ratings/rating.module';
 @Module({
   imports: [
     UserModule,
@@ -26,8 +27,9 @@ import { UserModule } from './modules/user/user.module';
     FileModule,
     CommentModule,
     EmployeeModule,
+    RatingModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })
-export class AppModule {}
+export class AppModule { }
