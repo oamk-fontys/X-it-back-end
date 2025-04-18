@@ -25,7 +25,7 @@ export class RatingService {
         });
     }
 
-    public async getRatingsById(id: string) {
+    public async getRatingById(id: string) {
         const rating = await this.prisma.rating.findUnique({
             where: { id },
         });
@@ -35,6 +35,18 @@ export class RatingService {
         }
 
         return rating;
+    }
+
+    public async getAllRatingsByUserId(userId: string) {
+        return await this.prisma.rating.findMany({
+            where: {
+                userId: userId,
+            },
+            include: {
+                room: true,
+                user: true,
+            },
+        });
     }
 
     public async createRating(body: CreateRatingDto, userId: string) {
