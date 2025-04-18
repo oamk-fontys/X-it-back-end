@@ -25,15 +25,6 @@ export class CreateEditCompanyDto {
   @Expose()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'The owner',
-    example: '76dcdb77-5522-4deb-b8ba-8bc4b16892a3',
-    type: String,
-  })
-  ownerId: string;
-
-  @Expose()
-  @IsNotEmpty()
-  @ApiProperty({
     description: 'The city of the company',
     example: 'Amsterdam',
     type: String,

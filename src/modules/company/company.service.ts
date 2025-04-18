@@ -30,15 +30,6 @@ export class CompanyService {
   }
 
   public async createCompany(body: CreateEditCompanyDto) {
-    if (body.ownerId) {
-      const owner = await this.prisma.user.findUnique({
-        where: { id: body.ownerId },
-      });
-
-      if (!owner) {
-        throw new NotFoundException('Owner not found');
-      }
-    }
     const newCompany = await this.prisma.company.create({
       data: {
         ...body,
@@ -52,15 +43,6 @@ export class CompanyService {
   }
 
   public async updateCompany(id: string, body: Partial<CreateEditCompanyDto>) {
-    if (body.ownerId) {
-      const owner = await this.prisma.user.findUnique({
-        where: { id: body.ownerId },
-      });
-
-      if (!owner) {
-        throw new NotFoundException('Owner not found');
-      }
-    }
     const companyToUpdate = await this.prisma.company.findUnique({
       where: { id },
     });
