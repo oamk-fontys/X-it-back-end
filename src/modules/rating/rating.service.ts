@@ -38,7 +38,8 @@ export class RatingService {
     }
 
     public async getAllRatingsByUserId(userId: string) {
-        return await this.prisma.rating.findMany({
+        console.log('Begin fetching ratings for userId:', userId); // Log de userId
+        const ratings = await this.prisma.rating.findMany({
             where: {
                 userId: userId,
             },
@@ -47,6 +48,8 @@ export class RatingService {
                 user: true,
             },
         });
+        console.log('Ratings fetched from database:', ratings); // Log de resultaten van de query
+        return ratings;
     }
 
     public async createRating(body: CreateRatingDto, userId: string) {

@@ -60,20 +60,24 @@ export class RatingController {
         return this.ratingService.getRatingById(id);
     }
 
-    @Get('user/:userId')
+    @Get('user')
     @ApiOkResponse({
-        description: 'Get all ratings by user ID',
+        description: 'Get all ratings for user',
         type: RatingDto,
         isArray: true,
     })
+    @IsAuthenticated([Role.USER])
     @UseInterceptors(
         new ResponseInterceptor(RatingDto, {
             user: MinimalUserDto,
             room: MinimalRoomDto,
         }),
     )
-    async getAllRatingsByUserId(@Param('userId') userId: string) {
-        return this.ratingService.getAllRatingsByUserId(userId);
+    async getAllRatingsByUserId(@Req() req: RequestWithUser) {
+        console.log('User info from request:', req.user); // Log de user-info
+        const ratings = await this.ratingService.getAllRatingsByUserId(req.user.id);
+        console.log('Ratings returned to client:', ratings); // Log de ratings voordat ze worden geretourneerd
+        return ratings;
     }
 
     @Post()
