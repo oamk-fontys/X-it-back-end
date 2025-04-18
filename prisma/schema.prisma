@@ -63,8 +63,8 @@ model User {
   player           Player[]
   profilePicture   File?     @relation(fields: [profilePictureId], references: [id])
   profilePictureId String?
-  Comment          Comment[]
-  ratings          ratings[]
+  comment          Comment[]
+  ratings          Rating[]
 }
 
 // THIS IS NOT PART OF THE APPLICATION JUST AN EXAMPLE TO SHOW MODULES
@@ -122,8 +122,8 @@ model Room {
   phoneNumber String
   booking     Booking[]
   game        Game[]
-  Comment     Comment[]
-  ratings     ratings[]
+  comment     Comment[]
+  ratings     Rating[]
 }
 
 model TimeSlot {
@@ -206,7 +206,7 @@ model Comment {
   isSpoiler Boolean  @default(false)
 }
 
-model ratings {
+model Rating {
   id        String   @id @default(uuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id])

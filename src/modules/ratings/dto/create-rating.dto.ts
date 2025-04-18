@@ -3,9 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 import { IsNotEmpty, IsUUID } from 'class-validator';
 import { EditCommentDto } from 'src/modules/comment/dto/edit-comment.dto';
+import { EditRatingDto } from './edit-rating.dto';
 
 @Exclude()
-export class CreateRatingDto extends EditCommentDto {
+export class CreateRatingDto extends EditRatingDto {
     @Expose()
     @IsNotEmpty()
     @IsUUID()
