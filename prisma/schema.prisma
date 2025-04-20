@@ -44,26 +44,27 @@ enum BookingState {
 }
 
 model User {
-  id               String    @id @default(uuid())
-  email            String    @unique
+  id               String      @id @default(uuid())
+  email            String      @unique
   password         String
-  username         String    @unique
+  username         String      @unique
   firstName        String
   lastName         String
   phoneNumber      String
   dateOfBirth      DateTime
-  role             Role      @default(USER)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  role             Role        @default(USER)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
   pets             Pet[]
-  company          Company?  @relation(fields: [companyId], references: [id])
+  company          Company?    @relation(fields: [companyId], references: [id])
   companyId        String?
-  accessCode       String?   @unique
+  accessCode       String?     @unique
   booking          Booking[]
   player           Player[]
-  profilePicture   File?     @relation(fields: [profilePictureId], references: [id])
+  profilePicture   File?       @relation(fields: [profilePictureId], references: [id])
   profilePictureId String?
   Comment          Comment[]
+  Statistic        Statistic[]
 }
 
 // THIS IS NOT PART OF THE APPLICATION JUST AN EXAMPLE TO SHOW MODULES
@@ -158,17 +159,18 @@ model Booking {
 }
 
 model Game {
-  id        String    @id @default(uuid())
+  id        String      @id @default(uuid())
   teamName  String
   roomId    String
   startTime DateTime?
   endTime   DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  room      Room      @relation(fields: [roomId], references: [id])
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  room      Room        @relation(fields: [roomId], references: [id])
   players   Player[]
-  booking   Booking   @relation(fields: [bookingId], references: [id])
+  booking   Booking     @relation(fields: [bookingId], references: [id])
   bookingId String
+  Statistic Statistic[]
 }
 
 model Player {
@@ -202,4 +204,19 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isSpoiler Boolean  @default(false)
+}
+
+model Statistic {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  gameId           String
+  game             Game     @relation(fields: [gameId], references: [id])
+  score            Int
+  hintsUsed        Int
+  timeOfCompletion Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([userId, gameId])
 }
