@@ -41,7 +41,7 @@ export class GameDto {
   })
   @IsDateString()
   @IsOptional()
-  startTime?: string;
+  startTime?: string | null;
 
   @Expose()
   @ApiProperty({
@@ -51,7 +51,7 @@ export class GameDto {
   })
   @IsDateString()
   @IsOptional()
-  endTime?: string;
+  endTime?: string | null;
 
   @Expose()
   @IsString()
