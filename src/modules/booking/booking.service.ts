@@ -86,6 +86,7 @@ export class BookingService {
       include: {
         room: true,
         user: true,
+        timeSlot: true,
       },
     });
   }
@@ -98,6 +99,7 @@ export class BookingService {
       include: {
         room: true,
         user: true,
+        timeSlot: true,
       },
     });
   }
@@ -110,6 +112,7 @@ export class BookingService {
       include: {
         room: true,
         user: true,
+        timeSlot: true,
       },
     });
   }
@@ -122,6 +125,7 @@ export class BookingService {
       include: {
         room: true,
         user: true,
+        timeSlot: true,
       },
     });
 

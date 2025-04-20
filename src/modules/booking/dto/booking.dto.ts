@@ -3,6 +3,7 @@ import { BookingState } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
 import { MinimalRoomDto } from 'src/modules/room/dto/minimal-room.dto';
+import { MinimalTimeSlotDto } from 'src/modules/time-slot/dto/time-slot.dto';
 import { MinimalUserDto } from 'src/modules/user/dto/minimal-user.dto';
 
 @Exclude()
@@ -33,6 +34,14 @@ export class BookingDto {
     type: MinimalRoomDto,
   })
   room: MinimalRoomDto;
+
+  @Expose()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The time slot',
+    type: MinimalTimeSlotDto,
+  })
+  timeSlot: MinimalTimeSlotDto;
 
   @Expose()
   @IsNotEmpty()
