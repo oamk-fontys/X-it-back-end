@@ -17,6 +17,7 @@ import { RequestWithUser } from 'src/core/auth/auth.guard';
 import { ResponseInterceptor } from 'src/core/interceptor/response.interceptor';
 import { MinimalRoomDto } from 'src/modules/room/dto/minimal-room.dto';
 import { MinimalUserDto } from 'src/modules/user/dto/minimal-user.dto';
+import { MinimalTimeSlotDto } from '../time-slot/dto/time-slot.dto';
 import { BookingGuard, RequestWithQRCode } from './booking.guard';
 import { BookingService } from './booking.service';
 import { BookingQrCodeDto } from './dto/booking-qr-code.dto';
@@ -27,7 +28,7 @@ import { ValidateBookingDto } from './dto/validate-booking.dto';
 @Controller('booking')
 @UseInterceptors(ClassSerializerInterceptor)
 export class BookingController {
-  constructor(private readonly bookingService: BookingService) { }
+  constructor(private readonly bookingService: BookingService) {}
 
   @Get('admin')
   @ApiOkResponse({
@@ -40,6 +41,7 @@ export class BookingController {
     new ResponseInterceptor(BookingDto, {
       user: MinimalUserDto,
       room: MinimalRoomDto,
+      timeSlot: MinimalTimeSlotDto,
     }),
   )
   async getAllBookings(@Req() req: RequestWithUser) {
@@ -57,6 +59,7 @@ export class BookingController {
     new ResponseInterceptor(BookingDto, {
       user: MinimalUserDto,
       room: MinimalRoomDto,
+      timeSlot: MinimalTimeSlotDto,
     }),
   )
   async getAllBookingsByUserId(@Req() req: RequestWithUser) {
@@ -73,6 +76,7 @@ export class BookingController {
     new ResponseInterceptor(BookingDto, {
       user: MinimalUserDto,
       room: MinimalRoomDto,
+      timeSlot: MinimalTimeSlotDto,
     }),
   )
   async getSingleBookingByUserId(
@@ -92,6 +96,7 @@ export class BookingController {
     new ResponseInterceptor(BookingDto, {
       user: MinimalUserDto,
       room: MinimalRoomDto,
+      timeSlot: MinimalTimeSlotDto,
     }),
   )
   @IsAuthenticated([Role.ADMIN, Role.COMPANY])

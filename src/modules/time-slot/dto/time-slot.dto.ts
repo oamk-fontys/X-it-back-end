@@ -4,7 +4,7 @@ import { Exclude, Expose } from 'class-transformer';
 import { MinimalRoomDto } from 'src/modules/room/dto/minimal-room.dto';
 
 @Exclude()
-export class TimeSlotDto {
+export class MinimalTimeSlotDto {
   @Expose()
   @ApiProperty({
     description: 'The id of the time slot',
@@ -35,15 +35,18 @@ export class TimeSlotDto {
 
   @Expose()
   @ApiProperty({
-    description: 'The room of the time slot',
-    type: MinimalRoomDto,
-  })
-  room: MinimalRoomDto;
-
-  @Expose()
-  @ApiProperty({
     description: 'The availability of the time slot',
     type: Boolean,
   })
   isAvailable: boolean;
+}
+
+@Exclude()
+export class TimeSlotDto extends MinimalTimeSlotDto {
+  @Expose()
+  @ApiProperty({
+    description: 'The room of the time slot',
+    type: MinimalRoomDto,
+  })
+  room: MinimalRoomDto;
 }
