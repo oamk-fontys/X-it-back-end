@@ -11,7 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { Role } from '@prisma/client';
+import { Role, BookingState } from '@prisma/client';
 import { IsAuthenticated } from 'src/core/auth/auth.decorator';
 import { RequestWithUser } from 'src/core/auth/auth.guard';
 import { ResponseInterceptor } from 'src/core/interceptor/response.interceptor';
@@ -167,5 +167,15 @@ export class BookingController {
   @IsAuthenticated()
   async deleteBooking(@Param('id') id: string) {
     return this.bookingService.cancelBooking(id);
+  }
+
+  @Put(':id/state')
+  @IsAuthenticated([Role.ADMIN, Role.COMPANY])
+  async updateBookingState(
+    @Req() req: RequestWithUser,
+    @Param('id') id: string,
+    @Body() body: { state: BookingState },
+  ) {
+    return this.bookingService.updateBookingState(id, body.state, req.user);
   }
 }
