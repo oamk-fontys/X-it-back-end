@@ -20,6 +20,7 @@ export class StatisticService {
         players: {
           select: {
             userId: true,
+            isGuest: true,
           },
         },
       },
@@ -60,7 +61,8 @@ export class StatisticService {
     return await this.prisma.statistic.createMany({
       data: game.players
         .filter(
-          (player): player is { userId: string } => player.userId !== null,
+          (player): player is { userId: string; isGuest: boolean } =>
+            player.userId !== null && !player.isGuest,
         )
         .map((player) => ({
           hintsUsed: statisticDto.hintsUsed,
@@ -73,7 +75,7 @@ export class StatisticService {
   }
 
   async getStatisticByGameId(gameId: string, userId: string) {
-    return await this.prisma.statistic.findFirst({
+    const statistic = await this.prisma.statistic.findFirst({
       where: {
         userId,
         gameId,
@@ -82,5 +84,11 @@ export class StatisticService {
         game: true,
       },
     });
+
+    if (!statistic) {
+      throw new NotFoundException('No data found for this game');
+    }
+
+    return statistic;
   }
 }
