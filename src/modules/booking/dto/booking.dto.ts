@@ -54,6 +54,14 @@ export class BookingDto {
   @Expose()
   @IsNotEmpty()
   @ApiProperty({
+    description: 'The date of the booking',
+    type: Date,
+  })
+  date: Date;
+
+  @Expose()
+  @IsNotEmpty()
+  @ApiProperty({
     description: 'created at booking',
     type: Date,
   })
