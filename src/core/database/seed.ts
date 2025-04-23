@@ -1,5 +1,10 @@
 import { faker } from '@faker-js/faker';
-import { Difficulty, PrismaClient, WeekDay } from '@prisma/client';
+import {
+  BookingState,
+  Difficulty,
+  PrismaClient,
+  WeekDay,
+} from '@prisma/client';
 import { hash } from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -196,7 +201,7 @@ async function main() {
           data: {
             userId: randomUser.id,
             roomId: randomRoom.id,
-            state: 'SCHEDULED',
+            state: faker.helpers.enumValue(BookingState),
             companyId: randomRoom.companyId,
             timeSlotId: randomTimeSlot.id,
             date: faker.date.future(),
