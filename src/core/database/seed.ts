@@ -273,6 +273,29 @@ async function main() {
     }),
   );
 
+  // Create ratings for each room
+  const ratings = await Promise.all(
+    rooms.flat().flatMap(async (room) => {
+      // Create 5-10 ratings per room
+      const numberOfRatings = faker.number.int({ min: 5, max: 10 });
+      return Promise.all(
+        Array(numberOfRatings)
+          .fill(null)
+          .map(async () => {
+            const randomUser =
+              regularUsers[Math.floor(Math.random() * regularUsers.length)];
+            return await prisma.rating.create({
+              data: {
+                userId: randomUser.id,
+                roomId: room.id,
+                rating: faker.number.int({ min: 1, max: 5 }), // Rating from 1 to 5
+              },
+            });
+          }),
+      );
+    }),
+  );
+
   console.log({
     companiesCount: companies.length,
     adminUsersCount: adminUsers.length,
@@ -282,6 +305,7 @@ async function main() {
     timeSlotsCount: timeSlots.flat().flat().length,
     bookingsCount: bookings.length,
     commentsCount: comments.flat().length,
+    ratingsCount: ratings.flat().length,
     //gamesCount: games.length,
     //playersCount: players.flat().length,
   });

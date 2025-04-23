@@ -63,7 +63,8 @@ model User {
   player           Player[]
   profilePicture   File?       @relation(fields: [profilePictureId], references: [id])
   profilePictureId String?
-  Comment          Comment[]
+  comment          Comment[]
+  ratings          Rating[]
   Statistic        Statistic[]
 }
 
@@ -122,7 +123,8 @@ model Room {
   phoneNumber String
   booking     Booking[]
   game        Game[]
-  Comment     Comment[]
+  comment     Comment[]
+  ratings     Rating[]
 }
 
 model TimeSlot {
@@ -204,6 +206,17 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isSpoiler Boolean  @default(false)
+}
+
+model Rating {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id])
+  rating    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Statistic {

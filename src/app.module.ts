@@ -10,6 +10,7 @@ import { EmployeeModule } from './modules/employee/employee.module';
 import { FileModule } from './modules/file/file.module';
 import { GameModule } from './modules/game/game.module';
 import { PlayerModule } from './modules/player/player.module';
+import { RatingModule } from './modules/rating/rating.module';
 import { RoomModule } from './modules/room/room.module';
 import { StatisticModule } from './modules/statistic/statistic.module';
 import { TimeSlotModule } from './modules/time-slot/time-slot.module';
@@ -27,6 +28,7 @@ import { UserModule } from './modules/user/user.module';
     FileModule,
     CommentModule,
     EmployeeModule,
+    RatingModule,
     StatisticModule,
   ],
   controllers: [AppController],
