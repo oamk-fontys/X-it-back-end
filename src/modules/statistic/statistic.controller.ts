@@ -12,6 +12,7 @@ import { IsAuthenticated } from 'src/core/auth/auth.decorator';
 import { RequestWithUser } from 'src/core/auth/auth.guard';
 import { ResponseInterceptor } from 'src/core/interceptor/response.interceptor';
 import { MinimalGameDto } from '../game/dto/game.dto';
+import { MinimalRoomDto } from '../room/dto/minimal-room.dto';
 import { CreateStatisticDto } from './dto/create-statistic.dto';
 import { StatisticDto } from './dto/statistic.dto';
 import { StatisticService } from './statistic.service';
@@ -19,6 +20,24 @@ import { StatisticService } from './statistic.service';
 @Controller('statistic')
 export class StatisticController {
   constructor(private readonly statisticService: StatisticService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Get all statistics' })
+  @ApiResponse({
+    status: 200,
+    description: 'The statistics have been successfully retrieved.',
+    type: StatisticDto,
+  })
+  @IsAuthenticated()
+  @UseInterceptors(
+    new ResponseInterceptor(StatisticDto, {
+      game: MinimalGameDto,
+      room: MinimalRoomDto,
+    }),
+  )
+  async getStatistics(@Req() req: RequestWithUser) {
+    return this.statisticService.getStatistics(req.user.id);
+  }
 
   @Post('create')
   @ApiOperation({ summary: 'Create a statistic' })

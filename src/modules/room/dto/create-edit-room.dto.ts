@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Difficulty } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
-import { IsNotEmpty, IsPhoneNumber } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsPhoneNumber } from 'class-validator';
 
 @Exclude()
 export class CreateEditRoomDto {
@@ -104,4 +104,12 @@ export class CreateEditRoomDto {
     type: String,
   })
   phoneNumber: string;
+
+  @Expose()
+  @IsOptional()
+  @ApiProperty({
+    description: 'The logo of the room',
+    type: String,
+  })
+  logoId: string;
 }

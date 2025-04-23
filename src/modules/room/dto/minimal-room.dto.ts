@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Difficulty } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
+import { FileDto } from 'src/modules/file/dto/file.dto';
 
 @Exclude()
 export class MinimalRoomDto {
@@ -21,6 +22,14 @@ export class MinimalRoomDto {
     type: String,
   })
   name: string;
+
+  @Expose()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The logo of the room',
+    type: FileDto,
+  })
+  logo: FileDto;
 
   @Expose()
   @IsNotEmpty()

@@ -6,6 +6,26 @@ import { CreateStatisticDto } from './dto/create-statistic.dto';
 export class StatisticService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async getStatistics(id: string) {
+    const statistics = await this.prisma.statistic.findMany({
+      where: {
+        userId: id,
+      },
+      include: {
+        game: {
+          include: {
+            room: true,
+          },
+        },
+      },
+    });
+
+    return statistics.map((statistic) => ({
+      ...statistic,
+      room: statistic.game.room,
+    }));
+  }
+
   public async createStatistic(statisticDto: CreateStatisticDto) {
     const game = await this.prisma.game.findUnique({
       where: {
