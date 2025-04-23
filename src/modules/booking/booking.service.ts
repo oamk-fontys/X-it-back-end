@@ -19,7 +19,7 @@ export class BookingService {
     private readonly roomService: RoomService,
     private readonly timeSlotService: TimeSlotService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   public async generateQr(userId: string, bookingId: string) {
     const booking = await this.prisma.booking.findFirst({
@@ -86,6 +86,7 @@ export class BookingService {
       include: {
         room: true,
         user: true,
+        timeSlot: true,
       },
     });
   }
@@ -98,6 +99,7 @@ export class BookingService {
       include: {
         room: true,
         user: true,
+        timeSlot: true,
       },
     });
   }
@@ -110,6 +112,7 @@ export class BookingService {
       include: {
         room: true,
         user: true,
+        timeSlot: true,
       },
     });
   }
@@ -122,6 +125,7 @@ export class BookingService {
       include: {
         room: true,
         user: true,
+        timeSlot: true,
       },
     });
 
@@ -218,6 +222,49 @@ export class BookingService {
       where: { id },
       data: {
         state: BookingState.CANCELLED,
+      },
+    });
+  }
+
+  // BOOKING STATE UPDATE FOR ADMIN AND COMPANY
+  public async updateBookingState(id: string, state: BookingState, user: UserDto) {
+    const booking = await this.prisma.booking.findUnique({
+      where: { id },
+      include: {
+        company: true,
+      },
+    });
+
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+
+    if (user.role !== Role.ADMIN && user.role !== Role.COMPANY) {
+      if (booking.companyId !== user.companyId) {
+        throw new ForbiddenException(
+          'You are not allowed to update this booking state',
+        );
+      }
+    }
+
+    const validTransitions: Record<BookingState, BookingState[]> = {
+      [BookingState.SCHEDULED]: [BookingState.IN_PROGRESS, BookingState.CANCELLED],
+      [BookingState.IN_PROGRESS]: [BookingState.DONE, BookingState.CANCELLED],
+      [BookingState.DONE]: [],
+      [BookingState.CANCELLED]: [],
+      [BookingState.BLOCKED]: [BookingState.SCHEDULED],
+    };
+
+    if (!validTransitions[booking.state].includes(state)) {
+      throw new BadRequestException(
+        `Invalid state transition from ${booking.state} to ${state}`,
+      );
+    }
+
+    return await this.prisma.booking.update({
+      where: { id },
+      data: {
+        state,
       },
     });
   }
