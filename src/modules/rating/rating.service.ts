@@ -1,7 +1,7 @@
 import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
+    ForbiddenException,
+    Injectable,
+    NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/core/database/prisma.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
@@ -9,103 +9,110 @@ import { EditRatingDto } from './dto/edit-rating.dto';
 
 @Injectable()
 export class RatingService {
-  constructor(private readonly prisma: PrismaService) {}
+    constructor(private readonly prisma: PrismaService) { }
 
-  public async getRatings(roomId: string) {
-    return await this.prisma.rating.findMany({
-      where: {
-        roomId,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      include: {
-        user: true,
-      },
-    });
-  }
-
-  public async getRatingById(id: string) {
-    const rating = await this.prisma.rating.findUnique({
-      where: { id },
-    });
-
-    if (!rating) {
-      throw new NotFoundException('Rating not found');
+    public async getRatings(roomId: string) {
+        return await this.prisma.rating.findMany({
+            where: {
+                roomId,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            include: {
+                user: true,
+                room: true,
+            },
+        });
     }
 
-    return rating;
-  }
+    public async getRatingById(id: string) {
+        console.log('Fetching rating with id:', id);
+        const rating = await this.prisma.rating.findUnique({
+            where: { id },
+        });
 
-  public async getAllRatingsByUserId(userId: string) {
-    const ratings = await this.prisma.rating.findMany({
-      where: {
-        userId: userId,
-      },
-      include: {
-        room: true,
-        user: true,
-      },
-    });
-    return ratings;
-  }
+        if (!rating) {
+            throw new NotFoundException('Rating not found');
+        }
 
-  public async createRating(body: CreateRatingDto, userId: string) {
-    const room = await this.prisma.room.findUnique({
-      where: { id: body.roomId },
-    });
-
-    if (!room) {
-      throw new NotFoundException('Room not found');
+        return rating;
     }
 
-    const newRating = await this.prisma.rating.create({
-      data: {
-        ...body,
-        userId,
-        rating: body.rating,
-      },
-    });
-
-    return newRating;
-  }
-
-  public async updateRating(id: string, body: EditRatingDto, userId: string) {
-    const rating = await this.prisma.rating.findUnique({
-      where: { id },
-    });
-
-    if (!rating) {
-      throw new NotFoundException('Rating not found');
+    public async getAllRatingsByUserId(userId: string) {
+        const ratings = await this.prisma.rating.findMany({
+            where: {
+                userId: userId,
+            },
+            include: {
+                room: true,
+                user: true,
+            },
+        });
+        return ratings;
     }
 
-    if (rating.userId !== userId) {
-      throw new ForbiddenException('You are not allowed to update this rating');
+    public async createRating(body: CreateRatingDto, userId: string) {
+        const room = await this.prisma.room.findUnique({
+            where: { id: body.roomId },
+        });
+
+        if (!room) {
+            throw new NotFoundException('Room not found');
+        }
+
+        const newRating = await this.prisma.rating.create({
+            data: {
+                ...body,
+                userId,
+                rating: body.rating,
+            },
+        });
+
+        return newRating;
     }
 
-    return await this.prisma.rating.update({
-      where: { id },
-      data: {
-        ...body,
-      },
-    });
-  }
+    public async updateRating(id: string, body: EditRatingDto, userId: string) {
+        const rating = await this.prisma.rating.findUnique({
+            where: { id },
+        });
 
-  public async deleteRating(id: string, userId: string) {
-    const rating = await this.prisma.rating.findUnique({
-      where: { id },
-    });
+        if (!rating) {
+            throw new NotFoundException('Rating not found');
+        }
 
-    if (!rating) {
-      throw new NotFoundException('Rating not found');
+        if (rating.userId !== userId) {
+            throw new ForbiddenException(
+                'You are not allowed to update this rating',
+            );
+        }
+
+        return await this.prisma.rating.update({
+            where: { id },
+            data: {
+                ...body,
+            },
+        });
     }
 
-    if (rating.userId !== userId) {
-      throw new ForbiddenException('You are not allowed to delete this rating');
+    public async deleteRating(id: string, userId: string) {
+        const rating = await this.prisma.rating.findUnique({
+            where: { id },
+        });
+
+        if (!rating) {
+            throw new NotFoundException('Rating not found');
+        }
+
+        if (rating.userId !== userId) {
+            throw new ForbiddenException(
+                'You are not allowed to delete this rating',
+            );
+        }
+
+        return await this.prisma.rating.delete({
+            where: { id },
+        });
     }
 
-    return await this.prisma.rating.delete({
-      where: { id },
-    });
-  }
 }
