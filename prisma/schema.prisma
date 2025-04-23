@@ -119,6 +119,8 @@ model Room {
   city        String
   postalCode  String
   country     String
+  logoId      String?
+  logo        File?      @relation(fields: [logoId], references: [id])
   difficulty  Difficulty @default(EASY)
   phoneNumber String
   booking     Booking[]
@@ -194,6 +196,7 @@ model File {
   updatedAt DateTime  @updatedAt
   Company   Company[]
   User      User[]
+  Room      Room[]
 }
 
 model Comment {

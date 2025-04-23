@@ -10,6 +10,7 @@ export class RoomService {
   public async getRooms() {
     return await this.prisma.room.findMany({
       include: {
+        logo: true,
         company: {
           include: {
             logo: true,
@@ -23,6 +24,7 @@ export class RoomService {
     const room = await this.prisma.room.findUnique({
       where: { id },
       include: {
+        logo: true,
         company: {
           include: {
             logo: true,
@@ -50,6 +52,7 @@ export class RoomService {
     return await this.prisma.room.findMany({
       where: { companyId },
       include: {
+        logo: true,
         company: {
           include: {
             logo: true,
@@ -70,6 +73,9 @@ export class RoomService {
     const newRoom = await this.prisma.room.create({
       data: {
         ...body,
+      },
+      include: {
+        logo: true,
       },
     });
 
@@ -98,6 +104,9 @@ export class RoomService {
       where: { id },
       data: {
         ...body,
+      },
+      include: {
+        logo: true,
       },
     });
   }
@@ -134,6 +143,7 @@ export class RoomService {
         },
       },
       include: {
+        logo: true,
         company: {
           include: {
             logo: true,

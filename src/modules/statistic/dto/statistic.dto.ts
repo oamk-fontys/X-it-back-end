@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 import { MinimalGameDto } from 'src/modules/game/dto/game.dto';
+import { MinimalRoomDto } from 'src/modules/room/dto/minimal-room.dto';
 import { CreateStatisticDto } from './create-statistic.dto';
 
 @Exclude()
@@ -22,4 +23,10 @@ export class StatisticDto extends CreateStatisticDto {
     description: 'The game',
   })
   game: MinimalGameDto;
+
+  @Expose()
+  @ApiProperty({
+    description: 'The room',
+  })
+  room: MinimalRoomDto;
 }
