@@ -94,10 +94,14 @@ export class StatisticService {
     });
   }
 
-  async getStatisticByGameId(gameId: string, userId: string) {
+  async getStatisticByGameId(
+    gameId: string,
+    userId: string,
+    isCompany: boolean,
+  ) {
     const statistic = await this.prisma.statistic.findFirst({
       where: {
-        userId,
+        ...(!isCompany && { userId }),
         gameId,
       },
       include: {

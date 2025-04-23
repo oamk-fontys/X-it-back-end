@@ -8,6 +8,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
 import { IsAuthenticated } from 'src/core/auth/auth.decorator';
 import { RequestWithUser } from 'src/core/auth/auth.guard';
 import { ResponseInterceptor } from 'src/core/interceptor/response.interceptor';
@@ -68,6 +69,10 @@ export class StatisticController {
     @Param('gameId') gameId: string,
     @Req() req: RequestWithUser,
   ) {
-    return this.statisticService.getStatisticByGameId(gameId, req.user.id);
+    return this.statisticService.getStatisticByGameId(
+      gameId,
+      req.user.id,
+      req.user.role === Role.COMPANY,
+    );
   }
 }
