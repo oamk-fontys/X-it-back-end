@@ -1,10 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
-import { IsDateString, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { BookingDto } from 'src/modules/booking/dto/booking.dto';
 
 @Exclude()
-export class GameDto {
+export class MinimalGameDto {
   @Expose()
   @ApiProperty({
     description: 'The unique ID of the game',
@@ -26,7 +31,6 @@ export class GameDto {
   @Expose()
   @ApiProperty({
     description: 'The ID of the room',
-    //uuid
     example: '617949f8-0c4e-4bb8-b13b-c24fd5175f3b',
   })
   @IsString()
@@ -41,7 +45,7 @@ export class GameDto {
   })
   @IsDateString()
   @IsOptional()
-  startTime?: string;
+  startTime?: string | null;
 
   @Expose()
   @ApiProperty({
@@ -51,8 +55,11 @@ export class GameDto {
   })
   @IsDateString()
   @IsOptional()
-  endTime?: string;
+  endTime?: string | null;
+}
 
+@Exclude()
+export class GameDto extends MinimalGameDto {
   @Expose()
   @IsString()
   @ApiProperty({
@@ -61,5 +68,4 @@ export class GameDto {
     required: true,
   })
   booking: BookingDto;
-
 }
